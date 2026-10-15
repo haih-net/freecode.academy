@@ -1,9 +1,9 @@
 export const site = {
-  origin: 'https://haih.site',
-  name: 'HAIH',
-  language: 'en',
+  origin: 'https://freecode.academy',
+  name: 'Freecode Academy',
+  language: 'ru',
   description:
-    'Building a website with AI, starting from requirements. Explore the working implementation, technology choices, experiments and lessons from HAIH.',
+    'AI R&D лаборатория и приватная сеть исполнителей. Мы определяем задачи, собираем проверенные команды и достигаем реальных результатов.',
 }
 
 // Preserve the identity published at https://fi1osof.ru/about.

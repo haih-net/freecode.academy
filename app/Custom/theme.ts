@@ -65,6 +65,23 @@ const backgrounds = {
 }
 
 export const theme = {
+  bg: '#FBFAF6',
+  surface: '#FFFFFF',
+  ink: '#0E0F12',
+  ink2: '#3B3D44',
+  muted: '#6B6F78',
+  line: '#E8E5DC',
+  accent: '#1F2937',
+  brand: '#FF5B2E',
+  brandSoft: '#FFE4D6',
+  blue: '#3D6BFF',
+  green: '#2EAE6B',
+  amber: '#E8A53A',
+  cream: '#F4EFE3',
+  radius: '18px',
+  maxw: '1200px',
+  font: `"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif`,
+  serif: `"Fraunces", "Times New Roman", Georgia, serif`,
   colors,
   backgrounds,
   breakpoints,
