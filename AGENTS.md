@@ -165,3 +165,19 @@ Record implemented decisions, their motivating needs, known limitations, and rep
 Use focused commits for coherent changes and versioned releases for reproducible milestones when requested as part of the workflow. Do not publish, deploy, or create remote releases merely because a local build succeeds.
 
 Gradually turn verified implementation knowledge into English Solution pages. Keep documentation proportional to the project's current complexity.
+
+## Freecode Academy coding guide (owner requirements)
+
+These project-specific rules take precedence over the generic template instructions above.
+
+- Put the site layout in `app/Custom/Layout` and page components in `app/Custom/pages`.
+- Keep child components directly beneath their owning component: `app/Custom/Layout/Header` and `app/Custom/Layout/Footer`. Do not insert an intermediate `components` directory.
+- Extract Header and Footer into separate components, each with its own colocated `styles.ts`. Keep component-specific styles with their component.
+- Maintain one shared theme in `app/Custom/theme.ts`. Extend that theme for the site's design; do not create `Layout/theme.ts` or other competing themes.
+- Use the existing file-based routing in `app/routes`. Keep route modules thin and do not modify `app/routes.ts`.
+- Preserve the original site's appearance, content, section names, and dynamic routing. Do not generate content migrations, static URL inventories, static sitemaps, or tests for every URL.
+- Keep the existing database and access it through Knex. For the current port, implement GraphQL queries only; do not add mutations. Hide sign-in, registration, creation, and editing controls.
+- Respect the requested page scope. When porting menu index pages, do not also implement individual record/detail pages.
+- After moving components or changing shared types, fix imports and rerun type checking. Verify the build when changes affect Linaria or routing.
+- Preserve the owner's changes, comments, logs, and diagnostics.
+- Reuse the original project’s entity link components under `app/Custom/components/Link` and its shared helpers. Keep URL construction with the corresponding link component. Use `getResizedImagePath` and the original image resizing middleware and presets.

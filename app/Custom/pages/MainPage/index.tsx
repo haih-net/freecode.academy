@@ -37,7 +37,7 @@ import {
   SplitText,
   Sub,
   Support,
-} from './primitives'
+} from '../../components/Page/styles'
 import {
   MainPageTrustStyled,
   MainPageStatsStyled,

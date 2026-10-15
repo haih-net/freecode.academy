@@ -31,7 +31,7 @@ export interface SeoHandle {
 }
 
 const notFound: SeoHeadersProps = {
-  title: 'Page not found — HAIH',
+  title: 'Page not found — Freecode Academy',
   description: 'The requested page could not be found.',
   noindex: true,
 }

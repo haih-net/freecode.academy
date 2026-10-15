@@ -4,7 +4,7 @@ import { createSeoMeta, unavailableSeoMeta } from '../components/seo/SeoHeaders'
 import type { SeoHandle } from '../components/seo/SeoHeaders'
 export const handle = {
   seo: {
-    title: 'Page not found — HAIH',
+    title: 'Page not found — Freecode Academy',
     description: 'The requested page could not be found.',
     noindex: true,
   },
