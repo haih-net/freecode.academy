@@ -9,6 +9,7 @@ import type { ViteDevServer } from 'vite'
 
 import { setupGraphqlMiddleware } from './graphqlMiddleware'
 import { setupMedia } from './schema/types/media'
+import { generateSitemap } from './sitemap'
 
 const dev = process.env.NODE_ENV === 'development'
 const port = Number(process.env.PORT || 3000)
@@ -47,6 +48,13 @@ async function startServer() {
   const app = express()
   app.set('trust proxy', true)
   app.disable('x-powered-by')
+
+  app.get('/sitemap.xml', generateSitemap)
+  app.get('/robots.txt', (_req, res) => {
+    res
+      .type('text/plain')
+      .sendFile(resolve(dev ? 'public/robots.txt' : 'build/client/robots.txt'))
+  })
 
   setupMedia(app)
 

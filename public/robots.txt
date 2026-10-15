@@ -1,4 +1,4 @@
 User-agent: *
-Allow: /
 
-Sitemap: https://haih.site/sitemap.xml
+Host: https://freecode.academy/
+Sitemap: https://freecode.academy/sitemap.xml
