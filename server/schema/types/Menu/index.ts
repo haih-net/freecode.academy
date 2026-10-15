@@ -57,6 +57,7 @@ builder.queryField('menuPage', (t) =>
       section: t.arg({ type: Section, required: true }),
       page: t.arg.int({ defaultValue: 1 }),
       status: t.arg.string(),
+      statuses: t.arg.stringList(),
       projectId: t.arg.string(),
     },
     resolve: (_, args, ctx) =>
@@ -66,6 +67,7 @@ builder.queryField('menuPage', (t) =>
         args.page ?? 1,
         args.status,
         args.projectId,
+        args.statuses,
       ),
   }),
 )

@@ -9,3 +9,9 @@ import './types/imageGeneration'
 export const schema = builder.toSchema()
 
 import './types/Detail'
+
+import './types/Library'
+
+import './types/Knowledge'
+
+import './types/World3d'

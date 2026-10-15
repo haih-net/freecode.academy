@@ -8,9 +8,8 @@ import { DetailDate } from '../../../components/Detail/Date'
 import { DetailContainer, Meta, Stack } from '../../../components/Detail/styles'
 import { Pagination } from '../../../components/Pagination'
 import { TopicStyled, Title, Comments, Comment, BlogEntry } from './styles'
-export const TopicPage: React.FC = () => {
-  const { record, comments, children, page, totalPages } =
-    useLoaderData<DetailPageData>()
+export const TopicView: React.FC<{ data: DetailPageData }> = ({ data }) => {
+  const { record, comments, children, page, totalPages } = data
   return (
     <DetailContainer>
       <Stack>
@@ -53,3 +52,7 @@ export const TopicPage: React.FC = () => {
     </DetailContainer>
   )
 }
+
+export const TopicPage: React.FC = () => (
+  <TopicView data={useLoaderData<DetailPageData>()} />
+)

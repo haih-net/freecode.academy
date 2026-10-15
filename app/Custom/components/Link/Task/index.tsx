@@ -16,7 +16,9 @@ export const TaskLink: React.FC<TaskLinkProps> = ({
   children,
   ...other
 }) => {
-  if (!task) {return null}
+  if (!task) {
+    return null
+  }
   return (
     <Link to={createTaskLink(task)} title={task.title || undefined} {...other}>
       {children ?? task.title}

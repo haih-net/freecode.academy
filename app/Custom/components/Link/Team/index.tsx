@@ -16,7 +16,9 @@ export const TeamLink: React.FC<TeamLinkProps> = ({
   children,
   ...other
 }) => {
-  if (!team) {return null}
+  if (!team) {
+    return null
+  }
   return (
     <Link to={makeTeamLink(team)} title={team.title || undefined} {...other}>
       {children ?? team.title}

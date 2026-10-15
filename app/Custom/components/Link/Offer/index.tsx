@@ -16,7 +16,9 @@ export const OfferLink: React.FC<OfferLinkProps> = ({
   children,
   ...other
 }) => {
-  if (!offer) {return null}
+  if (!offer) {
+    return null
+  }
   return (
     <Link to={makeOfferLink(offer)} title={offer.title || undefined} {...other}>
       {children ?? offer.title}

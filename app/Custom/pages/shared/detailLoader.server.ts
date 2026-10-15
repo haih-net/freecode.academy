@@ -58,6 +58,13 @@ const query: TypedDocumentNode<
       uri: $uri
       page: $page
     ) {
+      catalog {
+        website
+        address
+        email
+        phone
+        image
+      }
       record {
         ...PublicDetailRecord
       }

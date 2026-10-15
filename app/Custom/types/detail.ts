@@ -27,7 +27,15 @@ export interface UserSkill {
   dateFrom: string | null
   dateTill: string | null
 }
+export interface CatalogInfo {
+  website: string | null
+  address: string | null
+  email: string | null
+  phone: string | null
+  image: string | null
+}
 export interface DetailPageData {
+  catalog: CatalogInfo | null
   record: DetailRecord
   project: DetailRecord | null
   task: DetailRecord | null

@@ -1,0 +1,10 @@
+import { styled } from '@linaria/react'
+export const BlogsStyled = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 15px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+`

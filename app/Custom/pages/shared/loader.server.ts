@@ -12,6 +12,7 @@ const query: TypedDocumentNode<
     section: MenuSection
     page: number
     status: string | null
+    statuses: string[]
     projectId: string | null
   }
 > = gql`
@@ -19,12 +20,14 @@ const query: TypedDocumentNode<
     $section: MenuSection!
     $page: Int!
     $status: String
+    $statuses: [String!]
     $projectId: String
   ) {
     menuPage(
       section: $section
       page: $page
       status: $status
+      statuses: $statuses
       projectId: $projectId
     ) {
       page
@@ -78,6 +81,8 @@ export const menuLoader =
           section,
           page,
           status: section === 'tasks' ? url.searchParams.get('status') : null,
+          statuses:
+            section === 'tasks' ? url.searchParams.getAll('status_in') : [],
           projectId:
             section === 'tasks' ? url.searchParams.get('projectId') : null,
         },

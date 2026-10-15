@@ -16,7 +16,9 @@ export const ResourceLink: React.FC<ResourceLinkProps> = ({
   children,
   ...other
 }) => {
-  if (!resource) {return null}
+  if (!resource) {
+    return null
+  }
   return (
     <Link
       to={makeResourceLink(resource)}

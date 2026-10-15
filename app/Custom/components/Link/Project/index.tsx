@@ -16,7 +16,9 @@ export const ProjectLink: React.FC<ProjectLinkProps> = ({
   children,
   ...other
 }) => {
-  if (!object) {return null}
+  if (!object) {
+    return null
+  }
   return (
     <Link
       to={makeProjectLink(object)}

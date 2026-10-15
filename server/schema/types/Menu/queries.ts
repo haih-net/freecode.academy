@@ -44,6 +44,7 @@ export async function loadMenuPage(
   page: number,
   status?: string | null,
   projectId?: string | null,
+  requestedStatuses?: string[] | null,
 ): Promise<MenuPageData> {
   if (!Number.isSafeInteger(page) || page < 1 || page > 100000) {
     throw new GraphQLError('Invalid page', {
@@ -80,16 +81,20 @@ export async function loadMenuPage(
       columns.push('name', 'description', 'CreatedBy', 'Resource')
       break
     case 'tasks':
-      if (status) {
-        const dbStatus =
-          statuses[status] ??
-          (Object.values(statuses).includes(status) ? status : null)
-        if (!dbStatus) {
-          throw new GraphQLError('Invalid task status', {
-            extensions: { code: 'BAD_USER_INPUT' },
-          })
-        }
-        query.where('status', dbStatus)
+      if (status || requestedStatuses?.length) {
+        const values = status ? [status] : (requestedStatuses ?? [])
+        const selected = values.map((status) => {
+          const dbStatus =
+            statuses[status] ??
+            (Object.values(statuses).includes(status) ? status : null)
+          if (!dbStatus) {
+            throw new GraphQLError('Invalid task status', {
+              extensions: { code: 'BAD_USER_INPUT' },
+            })
+          }
+          return dbStatus
+        })
+        query.whereIn('status', selected)
       } else {
         query.whereNotIn('status', ['Done', 'Rejected', 'Completed'])
       }

@@ -8,7 +8,7 @@ import type {
 } from '../../../../app/Custom/types/detail'
 import type { PublicAuthor } from '../../../../app/Custom/types/menu'
 
-interface Row {
+export interface Row {
   id: string
   createdAt: Date
   updatedAt?: Date
@@ -128,7 +128,7 @@ const selectRows = (
   kind: DetailKind,
 ): Knex.QueryBuilder<Row, Row[]> => db<Row>(tables[kind]).select(columns[kind])
 
-async function records(
+export async function records(
   db: Knex,
   kind: DetailKind,
   rows: Row[],
@@ -251,6 +251,7 @@ export async function loadDetailPage(
   const record = (await records(db, kind, [row]))[0]
   const data: DetailPageData = {
     record,
+    catalog: null,
     project: null,
     task: null,
     members: [],
@@ -358,6 +359,46 @@ export async function loadDetailPage(
     data.task = await recordById(db, 'task', row.taskId)
   }
   if (kind === 'resource') {
+    if (row.type === 'Team' && row.Team) {
+      const team:
+        | {
+            website: string | null
+            address: string | null
+            email: string | null
+            phone: string | null
+            content: string | null
+            status: string
+          }
+        | undefined = await db('Team')
+        .select('website', 'address', 'email', 'phone', 'content', 'status')
+        .where('id', row.Team)
+        .first()
+      if (team) {
+        data.catalog = {
+          website: team.website,
+          address: team.address,
+          email: team.email,
+          phone: team.phone,
+          image: null,
+        }
+        data.record.content = team.content
+        data.record.status = team.status
+      }
+    }
+    if (row.type === 'Project') {
+      const file: { path: string } | undefined = await db('File')
+        .select('path')
+        .where('ImageResource', row.id)
+        .orderBy('rank')
+        .first()
+      data.catalog = {
+        website: null,
+        address: null,
+        email: null,
+        phone: null,
+        image: file?.path ?? null,
+      }
+    }
     const isBlog = row.type === 'Blog' || row.type === 'PersonalBlog'
     const related = selectRows(db, 'resource')
       .where({ published: true, deleted: false })
