@@ -154,10 +154,11 @@ it('uses the chat model when no separate search model is configured', async () =
 
 it('rejects a missing model before sending credentials', async () => {
   vi.stubEnv('CHAT_API_KEY', 'test-key')
-  vi.stubEnv('CHAT_WEB_SEARCH_MODEL', '')
-  vi.stubEnv('CHAT_MODEL', '')
+  const ctx = context()
+  ctx.config.model = ''
+  ctx.config.searchModel = ''
   const spy = vi.spyOn(globalThis, 'fetch')
-  await expect(prepare().execute(context())).rejects.toThrow('CHAT_MODEL')
+  await expect(prepare().execute(ctx)).rejects.toThrow('CHAT_MODEL')
   expect(spy).not.toHaveBeenCalled()
 })
 

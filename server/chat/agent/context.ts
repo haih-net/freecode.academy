@@ -52,7 +52,7 @@ export function createAgentContext<S extends AgentStorage>(
 ): AgentRunContext<S> {
   const config: AgentConfig = {
     apiKey: process.env.CHAT_API_KEY,
-    model: (process.env.CHAT_MODEL = 'google/gemini-3.1-flash-lite-preview'),
+    model: process.env.CHAT_MODEL || 'google/gemini-3.1-flash-lite-preview',
     systemMessage: buildSystemMessage(),
     timeoutMs: 120000,
     toolExplanations:
