@@ -23,3 +23,5 @@ docker/traefik/logs
 docker/mailserver
 
 docker/supabase/data
+
+/docker/codex

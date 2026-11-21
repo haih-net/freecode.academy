@@ -19,3 +19,6 @@ generated
 /docker/mailserver/config
 
 /docker/supabase/data
+
+/docker/codex/home
+/docker/codex/bin

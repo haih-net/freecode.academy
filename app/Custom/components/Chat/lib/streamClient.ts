@@ -1,9 +1,11 @@
+import type { CodexStreamEvent } from './codexEvents'
 import { chatErrorMessage, readChatError } from './errors'
 import { initializeApollo } from 'app/gql/apolloClient'
 import { CreateChatTokenDocument } from 'app/gql/generated'
 import { readCompletionStream } from './completionStream'
 
 export type StreamCallbacks = {
+  onEvent?: (event: CodexStreamEvent) => void
   onChunk: (text: string) => void
   onDone: () => void
   onError: (error: Error) => void
@@ -25,7 +27,7 @@ export async function sendMessageStream(
       abortSignal?.throwIfAborted()
       const token = await getChatToken(abortSignal)
       const userToken = localStorage.getItem('token')
-      return fetch('/api/chat', {
+      return fetch(isCodexChat ? '/api/codex' : '/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -92,7 +94,13 @@ export async function sendMessageStream(
     ) {
       throw new Error('Сервер не вернул потоковый ответ')
     }
-    for await (const text of readCompletionStream(response.body)) {
+    for await (const text of readCompletionStream(
+      response.body,
+      undefined,
+      undefined,
+      undefined,
+      callbacks.onEvent,
+    )) {
       callbacks.onChunk(text)
     }
     callbacks.onDone()
@@ -101,12 +109,32 @@ export async function sendMessageStream(
   }
 }
 
-export const CHAT_TOKEN_STORAGE_KEY = 'chat_access_token'
+export const isCodexChat: boolean = import.meta.env.VITE_CHAT_AGENT === 'codex'
+export const CHAT_TOKEN_STORAGE_KEY = isCodexChat
+  ? 'codex_chat_access_token'
+  : 'chat_access_token'
 
 const getChatToken = async (signal?: AbortSignal): Promise<string> => {
   const existing = localStorage.getItem(CHAT_TOKEN_STORAGE_KEY)
   if (existing) {
     return existing
+  }
+  if (isCodexChat) {
+    const response = await fetch('/api/codex/token', { method: 'POST', signal })
+    if (!response.ok) {
+      throw new Error(await readChatError(response))
+    }
+    const result: unknown = await response.json()
+    if (
+      !result ||
+      typeof result !== 'object' ||
+      !('token' in result) ||
+      typeof result.token !== 'string'
+    ) {
+      throw new Error('Сервер не вернул токен чата')
+    }
+    localStorage.setItem(CHAT_TOKEN_STORAGE_KEY, result.token)
+    return result.token
   }
   const result = await initializeApollo({ withWs: false }).mutate({
     mutation: CreateChatTokenDocument,

@@ -1,0 +1,6 @@
+/*
+!/.gitignore
+!/.dockerignore
+!/build.py
+!/Dockerfile
+!/README.md

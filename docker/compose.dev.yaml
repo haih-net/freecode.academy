@@ -11,6 +11,9 @@ services:
       - ../public:/app/public
       - ../vite.config.ts:/app/vite.config.ts
       - ../react-router.config.ts:/app/react-router.config.ts
+  codex:
+    ports:
+      - '127.0.0.1:${CODEX_PORT:-14500}:4500'
   supabase:
     ports:
       - 5432:5432

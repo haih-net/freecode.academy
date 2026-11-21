@@ -4,10 +4,12 @@ services:
       context: ../
       args:
         VITE_CLIENT_CERT_LOGIN: ${VITE_CLIENT_CERT_LOGIN:-false}
+        VITE_CHAT_AGENT: ${VITE_CHAT_AGENT:-legacy}
     env_file:
       - .env
     init: true
     volumes:
+      - ${CODEX_HOME_PATH:-./codex/home/default}:/codex/home
       - ../shared:/app/shared
       - ../uploads:/app/uploads
       - ../storage:/app/storage
@@ -27,8 +29,27 @@ services:
       monitoring.site: haih.site
     environment:
       DATABASE_FILENAME: ${DATABASE_FILENAME:-/app/server/database/data/database.sqlite}
+      CODEX_SERVER_URL: ws://${COMPOSE_PROJECT_NAME}-codex-1:4500
+      CODEX_TRANSPORT_TOKEN_FILE: /codex/home/transport-token
+      CODEX_SESSION_DIRECTORY: /codex/home/website-sessions
+      VITE_CHAT_AGENT: ${VITE_CHAT_AGENT:-legacy}
       METRICS_HOST: 0.0.0.0
       METRICS_PORT: '9464'
+  codex:
+    image: ${CODEX_IMAGE:-local/codex:727283cea5ba30e8cf8bbac6b68a03a4d91cf1b7-r1}
+    pull_policy: never
+    build:
+      context: ./codex
+      args:
+        CODEX_REVISION: ${CODEX_REVISION:-727283cea5ba30e8cf8bbac6b68a03a4d91cf1b7}
+    init: true
+    restart: unless-stopped
+    volumes:
+      - ${CODEX_HOME_PATH:-./codex/home/default}:/codex/home
+    environment:
+      CHAT_API_KEY: ${CHAT_API_KEY:-}
+    expose:
+      - '4500'
   supabase:
     image: supabase/postgres:15.1.0.147
     volumes:

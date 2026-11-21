@@ -19,5 +19,3 @@ docker/monitoring/alertmanager/generated.json
 /test-results
 
 !docker/.env.example
-
-/docker/supabase/data

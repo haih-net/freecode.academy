@@ -135,3 +135,19 @@ The CLI uses the project environment and database, passes the supplied dialogue 
 Architectural tests in `server/chat/agent/ChatAgent.test.ts` cover direct execution, shared context through nested tools, custom storage access, isolation between storage instances and cancellation followed by retry. Existing HTTP tests cover the transport contract.
 
 The input context does not accept a dialogue ID. HTTP and CLI only obtain/pass tokens; verification is centralized in the agent. After verification, the agent emits an `authenticated` event and gives tools a context containing the verified dialogue ID.
+
+## Codex mode
+
+`VITE_CHAT_AGENT=codex` selects the Codex transport; omitted or `legacy` keeps the original chat. Set it in the root `.env` for host development or `docker/.env` for Compose. Production requires rebuilding the frontend. The two modes use separate browser token keys.
+
+`POST /api/codex/token` issues a signed visitor token without contacting Codex. Each `POST /api/codex` opens its own authenticated WebSocket, initializes it, creates a thread on the first message or resumes the existing thread, and streams the turn. Requests for different tokens can run concurrently. A second active request for the same token receives HTTP 409. After completion the adapter unsubscribes and closes the socket; browser cancellation interrupts the turn. This lock assumes one application process, as in the current Compose deployment.
+
+Codex owns the conversation history. The adapter only persists the visitor-to-thread mapping in `website-sessions` inside its home. It does not write legacy chat tables or invoke legacy agent tools and email notifications. Tokens authorize a dialogue; possession of a token grants access to that dialogue.
+
+Text retains the existing SSE delta format. Technical notifications are separate `{ codexEvent: { method, params } }` frames, including item lifecycle, tool progress, turn status and token usage events. The client exposes them through `StreamCallbacks.onEvent` and `ChatContext.technicalEvents` for the current request. A dedicated event UI is not implemented. The supplied minimal profile disables tools; event forwarding is ready for profiles that enable them. Interactive approvals are not implemented.
+
+The `codex` service uses `CODEX_HOME_PATH` (default `./codex/home/default`, relative to `docker/`) as a bind mount at `/codex/home`. The application mounts the same home at `/codex/home`; neither container uses separate mounts for its files or subdirectories. A new home needs `config.toml`, `model-catalog.json`, `auth.json`, `transport-token`, and a writable `website-sessions` directory. Configuration and model catalog files are individual to each home and are not tracked in Git. Use a new random transport token for an independent home. Keep runtime credentials and history out of Git. The entire `docker/codex` directory is excluded from the application build context; its own `.dockerignore` controls the separate Codex image build. Runtime home and binaries are excluded from development file serving.
+
+The image builds Codex and its Code Mode host from pinned sources inside Docker. Projects use the same versioned image and BuildKit compilation cache, with separate runtime homes. See [Docker installation and cache details](../../../../docker/codex/README.md). Authentication in the existing local home remains a separate copy, not automatic synchronization with subsequent primary-account sign-ins.
+
+For a host application, set `CODEX_SERVER_URL=ws://127.0.0.1:14500`, `CODEX_TRANSPORT_TOKEN_FILE=docker/codex/home/default/transport-token`, and `CODEX_SESSION_DIRECTORY=docker/codex/home/default/website-sessions`. `CODEX_PORT` changes the loopback-only port. Compose uses the full `${COMPOSE_PROJECT_NAME}-codex-1` container name for internal connections. When changing the home, recreate the Codex and application containers so all mounts use the same profile.

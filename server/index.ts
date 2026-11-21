@@ -4,6 +4,7 @@ import { db, migrateDatabase } from './database'
 import express, { type ErrorRequestHandler } from 'express'
 import { logDevError } from './errorLogging'
 import { setupChat } from './chat'
+import { setupCodexChat } from './codex'
 import { createServer } from 'node:http'
 import { listen, getServerUrls } from './listen'
 import { resolve } from 'node:path'
@@ -74,6 +75,7 @@ async function startServer() {
   setupClientCertificate(app, db)
   setupSitemap(app)
   setupChat({ app, storage: undefined })
+  setupCodexChat(app)
 
   app.use('/images/resized/', imageResizerMiddleware)
   app.use('/assets/images/', imageResizerMiddleware)
