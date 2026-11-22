@@ -9,11 +9,13 @@ import React, {
 } from 'react'
 import { ChatMessage, CHAT_SESSION_STORAGE_KEY } from '../interfaces'
 import { useSnackbar } from 'app/Custom/hooks/useSnackbar'
+import type { CodexStreamEvent } from '../../lib/codexEvents'
 import { sendMessageStream } from '../../lib/streamClient'
 import { recordStatistics } from 'app/components/Statistics'
 import { useLocation } from 'react-router'
 
 export type ChatContextValue = {
+  technicalEvents: CodexStreamEvent[]
   messages: ChatMessage[]
   isLoading: boolean
   showTypingIndicator: boolean
@@ -61,6 +63,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({
   const snackbar = useSnackbar()
   const [isOpen, setIsOpen] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
+  const [technicalEvents, setTechnicalEvents] = useState<CodexStreamEvent[]>([])
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [showTypingIndicator, setShowTypingIndicator] = useState(false)
@@ -215,6 +218,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({
           isUser: true,
         },
       ])
+      setTechnicalEvents([])
       setIsLoading(true)
       const controller = new AbortController()
       abortControllerRef.current = controller
@@ -229,6 +233,11 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({
           messageText,
           sessionId,
           {
+            onEvent: (event) => {
+              if (!finished && !controller.signal.aborted) {
+                setTechnicalEvents((previous) => [...previous, event])
+              }
+            },
             onChunk: (chunk) => {
               if (finished || controller.signal.aborted) {
                 return
@@ -314,6 +323,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({
   const value = useMemo<ChatContextValue>(
     () => ({
       messages,
+      technicalEvents,
       isLoading,
       showTypingIndicator,
       isOpen,
@@ -333,6 +343,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({
     }),
     [
       messages,
+      technicalEvents,
       isLoading,
       showTypingIndicator,
       isOpen,

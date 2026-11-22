@@ -16,6 +16,7 @@ CMD ["npm", "run", "dev"]
 
 FROM development AS build
 ARG VITE_CLIENT_CERT_LOGIN=false
+ARG VITE_CHAT_AGENT=legacy
 ENV NODE_OPTIONS="--dns-result-order=ipv4first"
 RUN npm run generate:types && npm run types && npm run build
 

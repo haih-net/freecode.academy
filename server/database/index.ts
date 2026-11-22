@@ -220,4 +220,9 @@ export async function migrateDatabase(
   }
 }
 
-export const db: Knex = createDatabase()
+let database: Knex | undefined
+
+export function getDatabase(): Knex {
+  database ??= createDatabase()
+  return database
+}

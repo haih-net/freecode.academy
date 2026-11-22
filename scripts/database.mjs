@@ -1,6 +1,8 @@
 // @ts-check
 import { baselineDatabase } from '../server/database/baseline/index.ts'
-import { db, migrateDatabase } from '../server/database/index.ts'
+import { getDatabase, migrateDatabase } from '../server/database/index.ts'
+
+const db = getDatabase()
 
 try {
   const [command = 'latest', name] = process.argv.slice(2)

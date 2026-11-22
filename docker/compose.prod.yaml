@@ -4,6 +4,8 @@ services:
     restart: unless-stopped
     build:
       target: production
+  codex:
+    restart: unless-stopped
   supabase:
     restart: unless-stopped
   traefik:

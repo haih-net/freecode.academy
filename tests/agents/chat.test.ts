@@ -4,10 +4,12 @@ import { createServer, type Server } from 'node:http'
 import express, { type Express } from 'express'
 import { afterAll, beforeAll, expect, it } from 'vitest'
 import { schema } from '../../server/schema'
-import { db, migrateDatabase } from '../../server/database'
+import { getDatabase, migrateDatabase } from '../../server/database'
 import { setupChat } from '../../server/chat'
 import { chatStorage } from '../../server/chat/storage'
 import type { ChatResponse } from '../../server/schema/types/ChatMessage/helpers/proxyChat'
+
+const db = getDatabase()
 
 const { graphql, extendSchema, parse } = createRequire(import.meta.url)(
   'graphql',

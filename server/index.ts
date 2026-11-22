@@ -1,9 +1,10 @@
 import './env'
 import { setupCallSignaling } from './schema/types/CallRoom/helpers/setupCallSignaling'
-import { db, migrateDatabase } from './database'
+import { getDatabase, migrateDatabase } from './database'
 import express, { type ErrorRequestHandler } from 'express'
 import { logDevError } from './errorLogging'
 import { setupChat } from './chat'
+import { setupCodexChat } from './codex'
 import { createServer } from 'node:http'
 import { listen, getServerUrls } from './listen'
 import { resolve } from 'node:path'
@@ -18,6 +19,8 @@ import { setupClientCertificate } from './middleware/clientCertificate'
 
 import { setupGraphqlMiddleware } from './middleware/graphql'
 import { imageResizerMiddleware } from './middleware/imageResizer'
+
+const db = getDatabase()
 
 const dev = process.env.NODE_ENV === 'development'
 
@@ -74,6 +77,7 @@ async function startServer() {
   setupClientCertificate(app, db)
   setupSitemap(app)
   setupChat({ app, storage: undefined })
+  setupCodexChat(app)
 
   app.use('/images/resized/', imageResizerMiddleware)
   app.use('/assets/images/', imageResizerMiddleware)

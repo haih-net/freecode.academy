@@ -1,3 +1,4 @@
+import { readCodexEvent, type CodexStreamEvent } from './codexEvents'
 import { chatErrorMessage } from './errors'
 
 export async function* readCompletionStream(
@@ -5,6 +6,7 @@ export async function* readCompletionStream(
   onMetadata?: (metadata: { id?: string; created?: number }) => void,
   onToolCalls?: (delta: unknown) => void,
   onUsage?: (usage: unknown) => void,
+  onCodexEvent?: (event: CodexStreamEvent) => void,
 ): AsyncGenerator<string> {
   const reader = body.getReader()
   const decoder = new TextDecoder()
@@ -24,6 +26,9 @@ export async function* readCompletionStream(
     const value: unknown = JSON.parse(payload)
     if (!value || typeof value !== 'object') {
       throw new Error('Некорректный ответ модели')
+    }
+    if ('codexEvent' in value) {
+      onCodexEvent?.(readCodexEvent(value.codexEvent))
     }
     if ('usage' in value && value.usage) {
       onUsage?.(value.usage)

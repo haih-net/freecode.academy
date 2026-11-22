@@ -16,6 +16,8 @@ module.exports = [
       'docker/mailserver/mail-state/**',
       'docker/mailserver/mail-logs/**',
       'docker/mailserver/config/**',
+      'docker/codex/home/**',
+      'docker/codex/bin/**',
       'storage/**',
       'uploads/**',
       'project/**',

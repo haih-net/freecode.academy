@@ -1,7 +1,7 @@
 import { lockDatabaseWrite } from '../database/lock'
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto'
 import type { Knex } from 'knex'
-import { db } from '../database'
+import { getDatabase } from '../database'
 
 export interface TokenUsage {
   inputTokens?: number
@@ -48,7 +48,11 @@ interface MessageRow {
 }
 
 export class ChatStorage {
-  constructor(readonly database: Knex = db) {}
+  constructor(private readonly providedDatabase?: Knex) {}
+
+  get database(): Knex {
+    return this.providedDatabase ?? getDatabase()
+  }
 
   private async getSecret(): Promise<Buffer> {
     await this.database('ChatSetting')

@@ -1,7 +1,7 @@
 import type { Express } from 'express'
 import type { Request, Response } from 'express'
 import type { Knex } from 'knex'
-import { db } from '../database'
+import { getDatabase } from '../database'
 
 const limit = 1000
 const sections = [
@@ -30,6 +30,7 @@ interface UrlItem {
 
 // Match the filters in the original server/sitemap/old.ts, shared by counts and pages.
 function sectionQuery(section: Section): Knex.QueryBuilder {
+  const db = getDatabase()
   switch (section) {
     case 'topics':
     case 'resources': {
@@ -292,6 +293,7 @@ async function generateConceptSitemap(
   res: Response,
 ): Promise<void> {
   const origin = `${req.protocol}://${req.get('host')}`
+  const db = getDatabase()
   const concepts = await db('KBConcept')
     .select<SitemapItem[]>(
       db.raw(`COALESCE(NULLIF("uri", ''),
