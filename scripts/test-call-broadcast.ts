@@ -23,6 +23,7 @@ process.env.NEXT_PUBLIC_SITE_SIGNUP_STRATEGY = 'INVITE'
 const origin = `http://localhost:${process.env.PORT}`
 const { getDatabase, migrateDatabase } =
   await import('../server/database/index')
+
 const db = getDatabase()
 await migrateDatabase(db)
 const { insertUser } =
