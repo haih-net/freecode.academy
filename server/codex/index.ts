@@ -91,7 +91,6 @@ export function setupCodexChat(
         authorization: req.headers.authorization,
         endpoint: `http://127.0.0.1:${req.socket.localPort}/api`,
         pageUrl: message.pageUrl,
-        config: { apiBaseUrl: 'https://openrouter.ai/api/v1' },
       }),
       chatId,
     }

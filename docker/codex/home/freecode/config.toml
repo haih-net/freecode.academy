@@ -1,7 +1,7 @@
 # Профиль Freecode Academy. Инструкции и инструменты передаёт сервер сайта.
 model = "google/gemini-3.1-flash-lite-preview"
 cli_auth_credentials_store = "file"
-model_provider = "openrouter"
+model_provider = "polza"
 instructions = ""
 developer_instructions = ""
 include_permissions_instructions = false
@@ -38,9 +38,9 @@ skip_host_skill_discovery = true
 [skills.bundled]
 enabled = false
 
-[model_providers.openrouter]
-name = "OpenRouter"
-base_url = "https://openrouter.ai/api/v1"
+[model_providers.polza]
+name = "Polza"
+base_url = "https://polza.ai/api/v1"
 env_key = "CHAT_API_KEY"
 wire_api = "responses"
 requires_openai_auth = false
