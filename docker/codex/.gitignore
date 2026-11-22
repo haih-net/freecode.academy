@@ -4,3 +4,10 @@
 !/build.py
 !/Dockerfile
 !/README.md
+
+!/home/
+/home/*
+!/home/freecode/
+/home/freecode/*
+!/home/freecode/config.toml
+!/home/freecode/README.md

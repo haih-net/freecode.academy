@@ -1,0 +1,47 @@
+# Профиль Freecode Academy. Инструкции и инструменты передаёт сервер сайта.
+model = "google/gemini-3.1-flash-lite-preview"
+cli_auth_credentials_store = "file"
+model_provider = "openrouter"
+instructions = ""
+developer_instructions = ""
+include_permissions_instructions = false
+include_collaboration_mode_instructions = false
+include_apps_instructions = false
+include_environment_context = false
+include_environment_context_time = false
+project_doc_max_bytes = 0
+web_search = "disabled"
+[tools.experimental_request_user_input]
+enabled = false
+[skills]
+include_instructions = false
+[features]
+goals = false
+image_generation = false
+shell_tool = false
+view_image = false
+sleep_tool = false
+code_mode = false
+code_mode_only = false
+multi_agent = false
+multi_agent_v2 = false
+apps = false
+plugins = false
+recommended_plugins = false
+tool_suggest = false
+tool_search = false
+search_tool = false
+apply_patch_freeform = false
+skip_host_skill_discovery = true
+
+
+[skills.bundled]
+enabled = false
+
+[model_providers.openrouter]
+name = "OpenRouter"
+base_url = "https://openrouter.ai/api/v1"
+env_key = "CHAT_API_KEY"
+wire_api = "responses"
+requires_openai_auth = false
+supports_websockets = false

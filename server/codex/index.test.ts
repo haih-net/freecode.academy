@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { WebSocketServer, type WebSocket } from 'ws'
 import { setupCodexChat } from './index'
+import { MemoryStorage } from '../chat/testing/MemoryStorage'
 
 let appServer: Server
 let rpc: WebSocketServer
@@ -15,6 +16,9 @@ let connections = 0
 let maximumConnections = 0
 let openConnections = 0
 let sequence = 0
+let callTool = false
+let toolResult: unknown
+let storage: MemoryStorage
 const methods: string[] = []
 const previous = { ...process.env }
 
@@ -23,6 +27,9 @@ beforeEach(async () => {
   await writeFile(join(directory, 'secret'), 'codex-test-secret')
   process.env.CODEX_TRANSPORT_TOKEN_FILE = join(directory, 'secret')
   process.env.CODEX_SESSION_DIRECTORY = join(directory, 'sessions')
+  callTool = false
+  toolResult = undefined
+  storage = new MemoryStorage()
   connections = 0
   maximumConnections = 0
   openConnections = 0
@@ -44,10 +51,15 @@ beforeEach(async () => {
       const request = JSON.parse(raw.toString()) as {
         id?: number
         method: string
+        result?: unknown
         params?: { threadId?: string }
       }
 
       if (request.id === undefined) {
+        return
+      }
+      if (!request.method) {
+        toolResult = request.result
         return
       }
       methods.push(request.method)
@@ -61,6 +73,21 @@ beforeEach(async () => {
       } else if (request.method === 'turn/start') {
         const threadId = request.params?.threadId
         const turn = { id: `turn-${++sequence}`, status: 'completed' }
+        if (callTool) {
+          socket.send(
+            JSON.stringify({
+              id: request.id,
+              method: 'item/tool/call',
+              params: {
+                threadId,
+                turnId: turn.id,
+                callId: 'call-1',
+                tool: 'get_system_info',
+                arguments: { reasoning: 'Проверю сведения об агенте' },
+              },
+            }),
+          )
+        }
         socket.send(JSON.stringify({ id: request.id, result: { turn } }))
         setTimeout(() => {
           for (const [method, params] of [
@@ -102,7 +129,7 @@ beforeEach(async () => {
     })
   })
   const app = express()
-  setupCodexChat(app)
+  setupCodexChat(app, storage)
   appServer = createServer(app)
   await new Promise<void>((resolve) =>
     appServer.listen(0, '127.0.0.1', resolve),
@@ -171,4 +198,22 @@ it('не открывает соединение при выдаче токен�
   expect(methods.filter((method) => method === 'thread/resume')).toHaveLength(1)
   expect(connections).toBe(3)
   await expect.poll(() => openConnections).toBe(0)
+})
+
+it('исполняет запрос инструмента с совпадающим RPC id и сохраняет историю', async () => {
+  callTool = true
+  const response = await send(await token())
+  expect(await response.text()).toContain('[DONE]')
+  expect(toolResult).toMatchObject({
+    success: true,
+    contentItems: [{ type: 'inputText' }],
+  })
+  const messages = [...storage.messages.values()].flat()
+  expect(messages.map(({ role }) => role)).toEqual([
+    'user',
+    'tool_call',
+    'tool',
+    'assistant',
+  ])
+  expect(messages[3].replyToId).toBe(messages[0].id)
 })

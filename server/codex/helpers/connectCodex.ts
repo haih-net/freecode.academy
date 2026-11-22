@@ -21,6 +21,7 @@ export function codexSecret(): string {
 
 export interface CodexConnection {
   request<T>(method: string, params: object): Promise<T>
+  onRequest?: (method: string, params: CodexEvent['params']) => Promise<unknown>
   onEvent?: (event: CodexEvent) => void
   onClose?: (error: Error) => void
   close(): void
@@ -85,7 +86,31 @@ export async function connectCodex(): Promise<CodexConnection> {
         error?: { message: string }
       }
 
-      if (message.id !== undefined) {
+      if (message.id !== undefined && message.method) {
+        const respond = (payload: object): void => {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ id: message.id, ...payload }))
+          }
+        }
+
+        Promise.resolve()
+          .then(() => {
+            if (!client.onRequest) {
+              throw new Error('Инструменты недоступны')
+            }
+            return client.onRequest(message.method, message.params)
+          })
+          .then((result) => respond({ result }))
+          .catch((error: unknown) =>
+            respond({
+              error: {
+                code: -32603,
+                message:
+                  error instanceof Error ? error.message : 'Ошибка инструмента',
+              },
+            }),
+          )
+      } else if (message.id !== undefined) {
         const call = pending.get(message.id)
         if (call) {
           pending.delete(message.id)
@@ -95,16 +120,6 @@ export async function connectCodex(): Promise<CodexConnection> {
           } else {
             call.resolve(message.result)
           }
-        } else if (message.method) {
-          ws.send(
-            JSON.stringify({
-              id: message.id,
-              error: {
-                code: -32601,
-                message: 'Инструменты отключены в этом чате',
-              },
-            }),
-          )
         }
       } else if (message.method) {
         client.onEvent?.(message)
@@ -129,6 +144,7 @@ export async function connectCodex(): Promise<CodexConnection> {
       ws.once('error', reject)
     })
     await client.request('initialize', {
+      capabilities: { experimentalApi: true },
       clientInfo: {
         name: 'website-chat',
         title: 'Чат сайта',

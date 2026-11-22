@@ -10,6 +10,7 @@ export interface AgentStorage {
 }
 
 export interface AgentConfig {
+  apiBaseUrl?: string
   apiKey?: string
   model?: string
   systemMessage: string
@@ -51,6 +52,7 @@ export function createAgentContext<S extends AgentStorage>(
   input: AgentContextInput<S>,
 ): AgentRunContext<S> {
   const config: AgentConfig = {
+    apiBaseUrl: process.env.CHAT_API_BASE_URL,
     apiKey: process.env.CHAT_API_KEY,
     model: process.env.CHAT_MODEL || 'google/gemini-3.1-flash-lite-preview',
     systemMessage: buildSystemMessage(),
