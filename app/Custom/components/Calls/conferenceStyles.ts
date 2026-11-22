@@ -53,10 +53,6 @@ export const ConferenceStyled = styled.div`
     background: #34483f;
   }
   .participants-toggle:focus-visible,
-  .participants-close:focus-visible {
-    outline: 2px solid #afd3b9;
-    outline-offset: 2px;
-  }
   .participants-heading {
     display: flex;
     flex-wrap: wrap;
@@ -268,10 +264,6 @@ export const ConferenceStyled = styled.div`
   .conference-toolbar button.hangup {
     background: #c63b36;
     width: 44px;
-  }
-  button:focus-visible {
-    outline: 2px solid #b8e5c5;
-    outline-offset: 2px;
   }
   .conference-dialog {
     width: min(600px, calc(100vw - 24px));

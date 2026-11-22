@@ -66,7 +66,7 @@ const backgrounds = {
 }
 
 export const theme = {
-  outline: '2px solid #FF5B2E',
+  outline: 'none',
   bg: '#FBFAF6',
   surface: '#FFFFFF',
   ink: '#0E0F12',

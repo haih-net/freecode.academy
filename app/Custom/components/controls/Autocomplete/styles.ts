@@ -27,10 +27,6 @@ export const AutocompleteFieldStyled = styled.div`
     font: inherit;
     padding: 12px 84px 12px 14px;
     color: ${theme.colors.foreground};
-    &:focus-visible {
-      outline: 2px solid ${theme.colors.primary};
-      outline-offset: 2px;
-    }
     &:disabled {
       background: #f2f3ef;
       opacity: 0.7;

@@ -31,10 +31,6 @@ export const SelectTriggerStyled = styled.button`
   &:hover:not(:disabled) {
     border-color: ${theme.colors.borderHover};
   }
-  &:focus-visible {
-    outline: 2px solid ${theme.colors.primary};
-    outline-offset: 2px;
-  }
   &:disabled {
     background: #f2f3ef;
     opacity: 0.7;

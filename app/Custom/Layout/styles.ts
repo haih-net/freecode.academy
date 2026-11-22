@@ -16,6 +16,13 @@ export const HtmlStyled = styled.html`
   *::after {
     box-sizing: border-box;
   }
+
+  textarea, input {
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
   @keyframes freecodeFadeUp {
     from {
       opacity: 0;
@@ -91,10 +98,6 @@ export const LayoutStyled = styled.div`
   img {
     display: block;
     max-width: 100%;
-  }
-  :focus-visible {
-    outline: 2px solid ${theme.brand};
-    outline-offset: 4px;
   }
   .skip-link {
     position: fixed;

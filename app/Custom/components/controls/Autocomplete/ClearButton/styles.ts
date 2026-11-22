@@ -19,9 +19,6 @@ export const ClearButtonStyled = styled.button`
   &:hover:not(:disabled) {
     background: #eef1e9;
   }
-  &:focus-visible {
-    outline: 2px solid ${theme.colors.primary};
-  }
   &:disabled {
     opacity: 0.7;
     cursor: not-allowed;

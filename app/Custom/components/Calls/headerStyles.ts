@@ -90,8 +90,4 @@ export const CallsHeaderStyled = styled.div`
     opacity: 0.5;
     cursor: default;
   }
-  :focus-visible {
-    outline: 2px solid #24583f;
-    outline-offset: 2px;
-  }
 `
