@@ -21,7 +21,9 @@ process.env.CALL_STUN_URLS = ''
 process.env.CALL_TURN_URLS = ''
 process.env.NEXT_PUBLIC_SITE_SIGNUP_STRATEGY = 'INVITE'
 const origin = `http://localhost:${process.env.PORT}`
-const { db, migrateDatabase } = await import('../server/database/index')
+const { getDatabase, migrateDatabase } =
+  await import('../server/database/index')
+const db = getDatabase()
 await migrateDatabase(db)
 const { insertUser } =
   await import('../server/schema/types/User/helpers/insertUser')

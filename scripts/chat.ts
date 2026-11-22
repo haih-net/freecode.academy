@@ -24,7 +24,8 @@ async function main(): Promise<void> {
     throw new Error('Provide a message. Use --help for usage.')
   }
   const { chatStorage } = await import('../server/chat/storage')
-  const { db, migrateDatabase } = await import('../server/database')
+  const { getDatabase, migrateDatabase } = await import('../server/database')
+  const db = getDatabase()
   const controller = new AbortController()
   const cancel = (): void => controller.abort(new Error('Interrupted'))
   process.once('SIGINT', cancel)

@@ -9,7 +9,7 @@ import {
   graphqlObservability,
   startMetricsServer,
 } from '../../server/observability'
-import { db } from '../../server/database'
+import { getDatabase } from '../../server/database'
 import type { Context } from '../../server/schema/builder'
 
 afterEach(() => vi.unstubAllEnvs())
@@ -19,6 +19,8 @@ test('GraphQL execution errors with HTTP 200 are recorded as server failures', a
 }) => {
   vi.stubEnv('METRICS_PORT', '0')
   vi.stubEnv('METRICS_HOST', '127.0.0.1')
+  const db = getDatabase()
+
   const metrics: Server | null = startMetricsServer()
   assert.ok(metrics)
   onTestFinished(

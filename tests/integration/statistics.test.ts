@@ -1,12 +1,14 @@
 import { afterAll, afterEach, beforeAll, expect, test, vi } from 'vitest'
 import { ApolloServer } from '@apollo/server'
 import type { FormattedExecutionResult } from 'graphql'
-import { db, migrateDatabase } from '../../server/database'
+import { getDatabase, migrateDatabase } from '../../server/database'
 import type { Context } from '../../server/schema/builder'
 import express from 'express'
 import type { Request } from 'express'
 import { schema } from '../../server/schema'
 import { logStatistics } from '../../server/statistics'
+
+const db = getDatabase()
 
 const req: Request = Object.assign(Object.create(express.request) as Request, {
   headers: { host: 'site.test', 'user-agent': 'fixture-browser' },

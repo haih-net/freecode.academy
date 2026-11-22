@@ -1,5 +1,5 @@
 import type { Knex } from 'knex'
-import { db } from './database'
+import { getDatabase } from './database'
 import { recordPageError } from './schema/types/PageError/storage'
 import { GraphQLError } from 'graphql'
 import type { Request } from 'express'
@@ -153,7 +153,7 @@ const unavailable = (): GraphQLError =>
 export const logStatistics = async (
   data: unknown,
   req: Request,
-  database: Knex = db,
+  database: Knex = getDatabase(),
 ): Promise<SavedStatistic[] | null> => {
   const endpoint: string | undefined = process.env.AGENTS_CENTER_ENDPOINT
   const token: string | undefined = process.env.AGENTS_CENTER_TOKEN

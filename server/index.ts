@@ -1,6 +1,6 @@
 import './env'
 import { setupCallSignaling } from './schema/types/CallRoom/helpers/setupCallSignaling'
-import { db, migrateDatabase } from './database'
+import { getDatabase, migrateDatabase } from './database'
 import express, { type ErrorRequestHandler } from 'express'
 import { logDevError } from './errorLogging'
 import { setupChat } from './chat'
@@ -19,6 +19,8 @@ import { setupClientCertificate } from './middleware/clientCertificate'
 
 import { setupGraphqlMiddleware } from './middleware/graphql'
 import { imageResizerMiddleware } from './middleware/imageResizer'
+
+const db = getDatabase()
 
 const dev = process.env.NODE_ENV === 'development'
 

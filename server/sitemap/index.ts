@@ -1,5 +1,5 @@
 import type { Express, Request, Response } from 'express'
-import { db } from '../database'
+import { getDatabase } from '../database'
 
 interface SitemapItem {
   uri: string
@@ -43,6 +43,7 @@ ${Array.from(urls, ([url, item]) => {
 
 async function generateSitemap(req: Request, res: Response): Promise<void> {
   const origin = `${req.protocol}://${req.get('host')}`
+  const db = getDatabase()
   const concepts = await db('KBConcept')
     .select<SitemapItem[]>(
       db.raw(`COALESCE(NULLIF("uri", ''),
