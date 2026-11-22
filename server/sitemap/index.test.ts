@@ -18,7 +18,7 @@ const { query, database } = vi.hoisted(() => {
   return { query, database }
 })
 
-vi.mock('../database', () => ({ db: database }))
+vi.mock('../database', () => ({ getDatabase: () => database }))
 import { setupSitemap } from './index'
 
 let server: Server
