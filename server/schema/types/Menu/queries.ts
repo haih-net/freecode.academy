@@ -19,6 +19,7 @@ const statuses: Record<string, string> = {
   PAUSED: 'Paused',
   REVISIONSREQUIRED: 'RevisionsRequired',
 }
+
 interface Row {
   id: string
   published?: boolean
@@ -59,6 +60,7 @@ export async function loadMenuPage(
     tasks: 'Task',
     topics: 'Resource',
   }[section]
+
   const query = db<Row>(table)
   const columns: string[] = ['id', 'createdAt']
   switch (section) {
@@ -87,6 +89,7 @@ export async function loadMenuPage(
           const dbStatus =
             statuses[status] ??
             (Object.values(statuses).includes(status) ? status : null)
+
           if (!dbStatus) {
             throw new GraphQLError('Invalid task status', {
               extensions: { code: 'BAD_USER_INPUT' },
@@ -94,6 +97,7 @@ export async function loadMenuPage(
           }
           return dbStatus
         })
+
         query.whereIn('status', selected)
       } else {
         query.whereNotIn('status', ['Done', 'Rejected', 'Completed'])
@@ -118,22 +122,26 @@ export async function loadMenuPage(
     (await query.clone().count<{ count: string }[]>('* as count'))[0]?.count ??
       0,
   )
+
   const firstLimit = ['teams', 'offers', 'tasks'].includes(section)
     ? 3
     : section === 'topics'
       ? 10
       : 6
+
   const limit = page === 1 ? firstLimit : section === 'topics' ? 10 : 6
   const skip = page === 1 ? 0 : firstLimit + (page - 2) * limit
   const orderColumn = ['people', 'teams', 'projects'].includes(section)
     ? 'updatedAt'
     : 'createdAt'
+
   const rows = await query
     .select<Row[]>(columns)
     .orderBy(orderColumn, section === 'offers' ? 'asc' : 'desc')
     .orderBy('id')
     .offset(skip)
     .limit(limit)
+
   const authorIds = [
     ...new Set(
       rows
@@ -141,21 +149,26 @@ export async function loadMenuPage(
         .filter((id): id is string => Boolean(id)),
     ),
   ]
+
   const authors: PublicAuthor[] = authorIds.length
     ? await db<PublicAuthor>('User')
         .select('id', 'username', 'fullname', 'image')
         .whereIn('id', authorIds)
     : []
+
   const authorMap = new Map(authors.map((author) => [author.id, author]))
   const resourceIds = rows
     .map((row) => row.Resource)
     .filter((id): id is string => Boolean(id))
+
   const resources: { id: string; uri: string }[] = resourceIds.length
     ? await db('Resource').select('id', 'uri').whereIn('id', resourceIds)
     : []
+
   const resourceMap = new Map(
     resources.map((resource) => [resource.id, resource]),
   )
+
   const items: MenuItem[] = rows.map((row) => ({
     id: row.id,
     name: row.name ?? null,
@@ -171,6 +184,7 @@ export async function loadMenuPage(
     CreatedBy: authorMap.get(row.createdById || row.CreatedBy || '') ?? null,
     Resource: resourceMap.get(row.Resource || '') ?? null,
   }))
+
   return {
     items,
     page,

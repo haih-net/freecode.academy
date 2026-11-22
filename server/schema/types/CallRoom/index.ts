@@ -1,0 +1,8 @@
+import './resolvers/callRoom'
+import './resolvers/createCallRoom'
+import './resolvers/updateCallRoom'
+import './resolvers/joinCallRoom'
+import './resolvers/closeCallRoom'
+import './resolvers/callRooms'
+import './resolvers/deleteCallRoom'
+import './resolvers/kickCallRoomParticipant'

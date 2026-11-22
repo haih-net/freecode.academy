@@ -5,9 +5,11 @@ export default function InteractionProbe() {
   const increment = useCallback(() => {
     setCount((c) => c + 1)
   }, [])
+
   const triggerError = useCallback(() => {
     setBroken(true)
   }, [])
+
   if (broken) {
     throw new Error('Intentional architecture verification error')
   }

@@ -41,15 +41,18 @@ export const TasksPage: React.FC = () => {
       <Hero>
         <HeroInner>
           <div>
-            <Eyebrow>Tasks</Eyebrow>
+            <Eyebrow>Задачи</Eyebrow>
             {showContent && (
               <>
-                <H1 tabIndex={-1}>Ship small. In public. Get hired.</H1>
+                <H1 tabIndex={-1}>
+                  Решайте небольшие задачи. Показывайте результат. Находите
+                  работу.
+                </H1>
                 <Sub>
-                  Tasks are the smallest unit of work in the network. Owners
-                  scope them inside projects; anyone with access can claim one.
-                  The result becomes a public worklog — the most honest
-                  portfolio that exists.
+                  Задачи — небольшие части работы в сообществе. Владельцы
+                  проектов определяют их объём, а любой участник с доступом
+                  может взяться за выполнение. Результаты попадают в открытый
+                  дневник работы — портфолио, которое говорит само за себя.
                 </Sub>
               </>
             )}
@@ -59,19 +62,23 @@ export const TasksPage: React.FC = () => {
             <>
               <WhyStrip>
                 <WhyItem>
-                  <strong>Real scope</strong>
-                  <span>Effort, deliverable, owner — visible upfront.</span>
+                  <strong>Понятный объём работы</strong>
+                  <span>
+                    Трудозатраты, ожидаемый результат и автор известны заранее.
+                  </span>
                 </WhyItem>
                 <WhyItem>
-                  <strong>Public worklog</strong>
-                  <span>How you solved it, not just that you did.</span>
+                  <strong>Открытый дневник работы</strong>
+                  <span>
+                    Покажите, как вы решили задачу, а не только сам результат.
+                  </span>
                 </WhyItem>
                 <WhyItem>
-                  <strong>Reputation</strong>
-                  <span>Closed tasks compound into trust.</span>
+                  <strong>Репутация</strong>
+                  <span>Каждая выполненная задача укрепляет доверие.</span>
                 </WhyItem>
               </WhyStrip>
-              <HeroImage $src={tasksImg} role="img" aria-label="Task board" />
+              <HeroImage $src={tasksImg} role="img" aria-label="Доска задач" />
             </>
           )}
         </HeroInner>
@@ -81,10 +88,8 @@ export const TasksPage: React.FC = () => {
         <Container>
           {showContent && (
             <>
-              <H2>Open and recent tasks</H2>
-              <SectionLede>
-                Pulled from active projects in the network.
-              </SectionLede>
+              <H2>Открытые и недавние задачи</H2>
+              <SectionLede>Задачи из активных проектов сообщества.</SectionLede>
             </>
           )}
 
@@ -113,7 +118,7 @@ export const TasksPage: React.FC = () => {
 
                     {CreatedBy && (
                       <CardMeta>
-                        By <UserLink user={CreatedBy} />
+                        Автор: <UserLink user={CreatedBy} />
                       </CardMeta>
                     )}
                   </CardBody>
@@ -129,23 +134,25 @@ export const TasksPage: React.FC = () => {
           {showContent && (
             <CrossLinks>
               <CrossCard to="/projects">
-                <strong>Tasks live inside projects →</strong>
-                <span>See the bigger context before you claim one.</span>
-                <em>See projects</em>
+                <strong>Задачи — часть проектов →</strong>
+                <span>Изучите проект, прежде чем браться за задачу.</span>
+                <em>Смотреть проекты</em>
               </CrossCard>
               <CrossCard to="/people">
-                <strong>Who claims tasks →</strong>
+                <strong>Кто берётся за задачи →</strong>
                 <span>
-                  Verified members. Each closed task hardens their reputation.
+                  Проверенные участники. Каждая выполненная задача укрепляет их
+                  репутацию.
                 </span>
-                <em>See members</em>
+                <em>Смотреть участников</em>
               </CrossCard>
               <CrossCard to="/offers">
-                <strong>Got a skill? →</strong>
+                <strong>Есть полезный навык? →</strong>
                 <span>
-                  Turn it into an offer so others come to you instead.
+                  Расскажите о нём в предложении, чтобы заинтересованные
+                  участники могли вас найти.
                 </span>
-                <em>See offers</em>
+                <em>Смотреть предложения</em>
               </CrossCard>
             </CrossLinks>
           )}

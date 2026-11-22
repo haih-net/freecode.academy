@@ -16,9 +16,11 @@ const Author = builder.objectRef<PublicAuthor>('MenuAuthor').implement({
     image: t.exposeString('image'),
   }),
 })
+
 const Resource = builder
   .objectRef<{ uri: string | null }>('MenuResource')
   .implement({ fields: (t) => ({ uri: t.exposeString('uri') }) })
+
 const Item = builder.objectRef<MenuItem>('MenuItem').implement({
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
@@ -36,6 +38,7 @@ const Item = builder.objectRef<MenuItem>('MenuItem').implement({
     Resource: t.field({ type: Resource, resolve: (row) => row.Resource }),
   }),
 })
+
 const Page = builder.objectRef<MenuPageData>('MenuPage').implement({
   fields: (t) => ({
     items: t.field({
@@ -49,6 +52,7 @@ const Page = builder.objectRef<MenuPageData>('MenuPage').implement({
     totalPages: t.exposeInt('totalPages', { nullable: false }),
   }),
 })
+
 builder.queryField('menuPage', (t) =>
   t.field({
     type: Page,

@@ -37,13 +37,13 @@ export function resolveUploadPath(path: string): string {
   const root = uploadRoot()
   const result = resolve(root, path)
   if (!result.startsWith(root + sep)) {
-    throw new Error('Invalid upload path')
+    throw new Error('Некорректный путь загрузки')
   }
   return result
 }
 export function requireUser(ctx: Context): UserRecord {
   if (!ctx.currentUser || ctx.currentUser.status === 'blocked') {
-    throw new GraphQLError('Unauthorized', {
+    throw new GraphQLError('Доступ запрещён', {
       extensions: { code: 'UNAUTHENTICATED' },
     })
   }
@@ -77,9 +77,11 @@ const FileType = builder.objectRef<FileRecord>('File').implement({
     }),
   }),
 })
+
 const FileWhere = builder.inputType('FileWhereUniqueInput', {
   fields: (t) => ({ id: t.id(), path: t.string(), hash: t.string() }),
 })
+
 const FileUpdate = builder.inputType('FileUpdateInput', {
   fields: (t) => ({
     name: t.string(),
@@ -87,6 +89,7 @@ const FileUpdate = builder.inputType('FileUpdateInput', {
     content: t.string(),
   }),
 })
+
 const SingleUpload = builder.inputType('SingleUploadInput', {
   fields: (t) => ({
     file: t.field({ type: 'Upload', required: true }),
@@ -94,6 +97,7 @@ const SingleUpload = builder.inputType('SingleUploadInput', {
     directory: t.string(),
   }),
 })
+
 export async function findFile(
   ctx: Context,
   where: { id?: string | null; path?: string | null; hash?: string | null },
@@ -101,8 +105,9 @@ export async function findFile(
   const conditions = Object.entries(where).filter(
     ([, value]) => value !== null && value !== undefined,
   )
+
   if (conditions.length !== 1 || !conditions[0][1]) {
-    throw new GraphQLError('Provide exactly one file identifier')
+    throw new GraphQLError('Укажите ровно один идентификатор файла')
   }
   return (
     (await ctx
@@ -121,6 +126,7 @@ builder.queryField('file', (t) =>
 )
 builder.mutationField('updateFile', (t) =>
   t.field({
+    authScopes: { active: true },
     type: FileType,
     nullable: false,
     args: {
@@ -131,29 +137,31 @@ builder.mutationField('updateFile', (t) =>
       const user = requireUser(ctx)
       const file = await findFile(ctx, args.where)
       if (!file) {
-        throw new GraphQLError('File not found')
+        throw new GraphQLError('Файл не найден')
       }
       if (file.createdById !== user.id && !user.sudo) {
-        throw new GraphQLError('Can not edit alien file')
+        throw new GraphQLError('Нельзя редактировать чужой файл')
       }
       const [updated] = await ctx
         .db<FileRecord>('File')
         .where('id', file.id)
         .update({ ...args.data, updatedAt: new Date() })
         .returning('*')
+
       return updated
     },
   }),
 )
 builder.mutationField('singleUpload', (t) =>
   t.field({
+    authScopes: { active: true },
     type: FileType,
     nullable: false,
     args: { data: t.arg({ type: SingleUpload, required: true }) },
     resolve: async (_, args, ctx) => {
       const user = requireUser(ctx)
       if (user.status !== 'active') {
-        throw new GraphQLError('Active account required')
+        throw new GraphQLError('Требуется активная учётная запись')
       }
       const upload = await (args.data.file as Promise<UploadValue>)
       const directory = args.data.directory || ''
@@ -162,7 +170,7 @@ builder.mutationField('singleUpload', (t) =>
         directory.startsWith('/') ||
         directory.includes('\\')
       ) {
-        throw new GraphQLError('Wrong directory')
+        throw new GraphQLError('Некорректный каталог')
       }
       const relative = `${user.id}/${directory ? directory + '/' : ''}${randomUUID()}-${basename(upload.filename)}`
       const target = resolveUploadPath(relative)
@@ -184,6 +192,7 @@ builder.mutationField('singleUpload', (t) =>
           .db<FileRecord>('File')
           .where('hash', digest)
           .first()
+
         if (existing) {
           await rm(target)
           return existing
@@ -206,6 +215,7 @@ builder.mutationField('singleUpload', (t) =>
           .onConflict('hash')
           .ignore()
           .returning('*')
+
         if (file) {
           return file
         }
@@ -213,8 +223,9 @@ builder.mutationField('singleUpload', (t) =>
           .db<FileRecord>('File')
           .where('hash', digest)
           .first()
+
         if (!duplicate) {
-          throw new Error('Upload could not be saved')
+          throw new Error('Не удалось сохранить файл')
         }
         await rm(target)
         return duplicate

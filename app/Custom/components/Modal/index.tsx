@@ -1,5 +1,6 @@
-import React, { useEffect, useCallback, useState } from 'react'
+import React, { useEffect, useCallback, useState, useRef } from 'react'
 import { createPortal } from 'react-dom'
+import { UNSAFE_PortalProvider } from 'react-aria'
 import {
   ModalOverlay,
   ModalContent,
@@ -23,6 +24,12 @@ export const Modal: React.FC<ModalProps> = ({
   children,
 }) => {
   const [mounted, setMounted] = useState(false)
+  const overlayRef = useRef<HTMLDivElement>(null)
+  const pointerDownOnOverlay = useRef(false)
+  const getContainer = useCallback(
+    (): HTMLElement | null => overlayRef.current,
+    [],
+  )
 
   useEffect(() => {
     setMounted(true)
@@ -38,9 +45,20 @@ export const Modal: React.FC<ModalProps> = ({
     [onClose],
   )
 
+  const handleOverlayPointerDown = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>): void => {
+      pointerDownOnOverlay.current = e.target === e.currentTarget
+    },
+    [],
+  )
+
   const handleOverlayClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
-      if (e.target === e.currentTarget && onClose) {
+      if (
+        pointerDownOnOverlay.current &&
+        e.target === e.currentTarget &&
+        onClose
+      ) {
         e.preventDefault()
         onClose()
       }
@@ -65,20 +83,26 @@ export const Modal: React.FC<ModalProps> = ({
   }
 
   return createPortal(
-    <ModalOverlay onClick={handleOverlayClick}>
-      <ModalContent
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modal-title"
-      >
-        <ModalHeader>
-          <ModalTitle id="modal-title">{title}</ModalTitle>
-          <ModalClose onClick={onClose} aria-label="Close modal">
-            ×
-          </ModalClose>
-        </ModalHeader>
-        <ModalBody>{children}</ModalBody>
-      </ModalContent>
+    <ModalOverlay
+      ref={overlayRef}
+      onPointerDown={handleOverlayPointerDown}
+      onClick={handleOverlayClick}
+    >
+      <UNSAFE_PortalProvider getContainer={getContainer}>
+        <ModalContent
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+        >
+          <ModalHeader>
+            <ModalTitle id="modal-title">{title}</ModalTitle>
+            <ModalClose onClick={onClose} aria-label="Close modal">
+              ×
+            </ModalClose>
+          </ModalHeader>
+          <ModalBody>{children}</ModalBody>
+        </ModalContent>
+      </UNSAFE_PortalProvider>
     </ModalOverlay>,
     document.body,
   )

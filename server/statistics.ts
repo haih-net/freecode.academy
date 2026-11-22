@@ -1,3 +1,6 @@
+import type { Knex } from 'knex'
+import { db } from './database'
+import { recordPageError } from './schema/types/PageError/storage'
 import { GraphQLError } from 'graphql'
 import type { Request } from 'express'
 import {
@@ -11,6 +14,7 @@ import {
 import type {
   StatisticsPacket,
   PageViewEvent,
+  ChatStatisticsEvent,
 } from '../app/components/Statistics/transport'
 
 interface SavedStatistic {
@@ -18,10 +22,13 @@ interface SavedStatistic {
 }
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   value !== null && typeof value === 'object' && !Array.isArray(value)
+
 const validId = (value: unknown): value is string =>
   typeof value === 'string' && /^[a-f0-9]{24}$/.test(value)
+
 const text = (value: unknown, max: number): value is string =>
   typeof value === 'string' && value.length <= max
+
 const httpUrl = (value: unknown): value is string => {
   if (!text(value, 4096)) {
     return false
@@ -32,6 +39,7 @@ const httpUrl = (value: unknown): value is string => {
     return false
   }
 }
+
 const dimension = (value: unknown): value is number =>
   typeof value === 'number' &&
   Number.isInteger(value) &&
@@ -51,6 +59,54 @@ const validatePacket = (data: unknown): StatisticsPacket => {
     })
   }
   const event: unknown = data.events[0]
+  if (
+    isRecord(event) &&
+    [
+      'chat.message.sent',
+      'chat.message.received',
+      'chat.message.error',
+    ].includes(String(event.eventId))
+  ) {
+    if (
+      !validId(event.eventKey) ||
+      !Number.isSafeInteger(event.timestamp) ||
+      typeof event.timestamp !== 'number' ||
+      event.timestamp < 0 ||
+      event.timestamp > 8_640_000_000_000_000 ||
+      !httpUrl(event.url) ||
+      !text(event.messageId, 200) ||
+      !text(event.message, 64000) ||
+      (event.sessionId !== undefined && !text(event.sessionId, 200)) ||
+      (event.response !== undefined && !text(event.response, 64000)) ||
+      (event.error !== undefined &&
+        (!isRecord(event.error) ||
+          !text(event.error.name, 200) ||
+          !text(event.error.message, 64000)))
+    ) {
+      throw new GraphQLError('Некорректное событие чата.', {
+        extensions: { code: 'BAD_USER_INPUT' },
+      })
+    }
+    const chat: ChatStatisticsEvent = {
+      eventId: event.eventId as ChatStatisticsEvent['eventId'],
+      eventKey: event.eventKey,
+      timestamp: event.timestamp,
+      url: event.url,
+      messageId: event.messageId,
+      message: event.message,
+      messageLength: event.message.length,
+      sessionId: event.sessionId,
+      status: event.eventId === 'chat.message.error' ? 'failed' : 'success',
+      ...(typeof event.response === 'string'
+        ? { response: event.response, responseLength: event.response.length }
+        : {}),
+      ...(isRecord(event.error)
+        ? { error: { name: event.error.name, message: event.error.message } }
+        : {}),
+    }
+
+    return { visitorId: data.visitorId, tabId: data.tabId, events: [chat] }
+  }
   if (
     !isRecord(event) ||
     event.eventId !== 'page.viewed' ||
@@ -85,6 +141,7 @@ const validatePacket = (data: unknown): StatisticsPacket => {
     language: event.language,
     viewport: { width: event.viewport.width, height: event.viewport.height },
   }
+
   return { visitorId: data.visitorId, tabId: data.tabId, events: [visit] }
 }
 
@@ -96,14 +153,18 @@ const unavailable = (): GraphQLError =>
 export const logStatistics = async (
   data: unknown,
   req: Request,
+  database: Knex = db,
 ): Promise<SavedStatistic[] | null> => {
   const endpoint: string | undefined = process.env.AGENTS_CENTER_ENDPOINT
   const token: string | undefined = process.env.AGENTS_CENTER_TOKEN
-  if (!endpoint || !token) {
-    return null
-  }
   const packet: StatisticsPacket = validatePacket(data)
-  const event: PageViewEvent = packet.events[0]
+  const event = packet.events[0]
+  if (event.eventId === 'page.viewed') {
+    await recordPageError(database, event)
+  }
+  if (!endpoint || !token) {
+    return [{ id: event.eventKey }]
+  }
   const requestReferer: string | undefined = req.get('referer')?.slice(0, 4096)
   let response: Response
   let body: unknown
@@ -125,7 +186,9 @@ export const logStatistics = async (
             data: {
               ...event,
               url: decodeStatisticsUrl(event.url),
-              referrer: decodeStatisticsUrl(event.referrer),
+              referrer: decodeStatisticsUrl(
+                typeof event.referrer === 'string' ? event.referrer : '',
+              ),
               visitorId: packet.visitorId,
               tabId: packet.tabId,
               site: decodeStatisticsDomain(req.hostname),
@@ -167,6 +230,7 @@ export const logStatistics = async (
           (isRecord(error.extensions) &&
             error.extensions.code === 'UNAUTHENTICATED')),
     )
+
     throw new GraphQLError(
       authFailed
         ? 'Statistics integration credentials rejected.'

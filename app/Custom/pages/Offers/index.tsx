@@ -42,17 +42,18 @@ export const OffersPage: React.FC = () => {
       <Hero>
         <HeroInner>
           <div>
-            <Eyebrow>Offers</Eyebrow>
+            <Eyebrow>Предложения</Eyebrow>
 
             {showContent && (
               <>
                 <H1 tabIndex={-1}>
-                  Anything you want to propose. In one format.
+                  Всё, что вы хотите предложить. В едином формате.
                 </H1>
                 <Sub>
-                  An offer is a free-form proposal from a member. A service, a
-                  collaboration, a research partnership, a hiring intent — same
-                  simple structure: what it is, who it's from, why it exists.
+                  Предложение — это инициатива участника в свободной форме.
+                  Услуга, сотрудничество, совместное исследование или поиск
+                  сотрудников — простая структура для всех: что предлагается,
+                  кто автор и какова цель.
                 </Sub>
               </>
             )}
@@ -62,22 +63,25 @@ export const OffersPage: React.FC = () => {
             <>
               <WhyStrip>
                 <WhyItem>
-                  <strong>Service</strong>
-                  <span>Sell what you do, with a clear scope.</span>
+                  <strong>Услуги</strong>
+                  <span>Предлагайте свои услуги с понятным объёмом работ.</span>
                 </WhyItem>
                 <WhyItem>
-                  <strong>Collaboration</strong>
-                  <span>Find a co-founder or build something together.</span>
+                  <strong>Сотрудничество</strong>
+                  <span>Найдите сооснователя или создайте что-то вместе.</span>
                 </WhyItem>
                 <WhyItem>
-                  <strong>Research / Hiring</strong>
-                  <span>Joint study, contract role, anything in between.</span>
+                  <strong>Исследования и найм</strong>
+                  <span>
+                    Совместное исследование, работа по контракту и другие
+                    возможности.
+                  </span>
                 </WhyItem>
               </WhyStrip>
               <HeroImage
                 $src={offersImg}
                 role="img"
-                aria-label="Offers and proposals"
+                aria-label="Предложения участников"
               />
             </>
           )}
@@ -88,10 +92,11 @@ export const OffersPage: React.FC = () => {
         <Container>
           {showContent && (
             <>
-              <H2>Open offers</H2>
+              <H2>Актуальные предложения</H2>
               <SectionLede>
-                Real proposals from real members. Click through to see the full
-                pitch and (if you have access) write directly.
+                Реальные предложения от участников сообщества. Откройте
+                предложение, чтобы узнать подробности и написать автору, если у
+                вас есть доступ.
               </SectionLede>
             </>
           )}
@@ -144,7 +149,7 @@ export const OffersPage: React.FC = () => {
                     )} */}
                     {CreatedBy && (
                       <CardMeta>
-                        By <UserLink user={CreatedBy} />
+                        Автор: <UserLink user={CreatedBy} />
                       </CardMeta>
                     )}
                   </CardBody>
@@ -160,21 +165,22 @@ export const OffersPage: React.FC = () => {
           {showContent && (
             <CrossLinks>
               <CrossCard to="/people">
-                <strong>Behind every offer is a person →</strong>
-                <span>Check who's writing before you reply.</span>
-                <em>See members</em>
+                <strong>За каждым предложением стоит человек →</strong>
+                <span>Узнайте больше об авторе, прежде чем отвечать.</span>
+                <em>Смотреть участников</em>
               </CrossCard>
               <CrossCard to="/teams">
-                <strong>Team offers carry more weight →</strong>
-                <span>A team can promise delivery, not just hours.</span>
-                <em>See teams</em>
+                <strong>Предложения команд весомее →</strong>
+                <span>
+                  Команда может предложить готовый результат, а не только часы
+                  работы.
+                </span>
+                <em>Смотреть команды</em>
               </CrossCard>
               <CrossCard to="/projects">
-                <strong>Offers often spawn projects →</strong>
-                <span>
-                  And projects spawn tasks. The full chain works here.
-                </span>
-                <em>See projects</em>
+                <strong>Из предложений рождаются проекты →</strong>
+                <span>А из проектов — задачи. Вся цепочка работает здесь.</span>
+                <em>Смотреть проекты</em>
               </CrossCard>
             </CrossLinks>
           )}

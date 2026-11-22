@@ -22,6 +22,7 @@ export const decodeStatisticsUrl = (value: string): string => {
       url.username || url.password
         ? `${url.username}${url.password ? `:${url.password}` : ''}@`
         : ''
+
     const port: string = url.port ? `:${url.port}` : ''
     // URL.hostname setters and URL.href serialize Unicode hosts back to punycode.
     // Keep the parsed URL components encoded and substitute only the hostname.

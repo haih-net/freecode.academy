@@ -6,6 +6,7 @@ const query: TypedDocumentNode<{ world3dScene: unknown }> = gql`
     world3dScene
   }
 `
+
 export const worldLoader = async (): Promise<WorldPageData> => {
   const client = createApolloClient({ withWs: false })
   try {

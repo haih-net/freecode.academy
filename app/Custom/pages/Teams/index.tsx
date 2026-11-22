@@ -38,16 +38,18 @@ export const TeamsPage: React.FC = () => {
       <Hero>
         <HeroInner>
           <div>
-            <Eyebrow>Teams</Eyebrow>
+            <Eyebrow>Команды</Eyebrow>
 
             {showContent && (
               <>
-                <H1 tabIndex={-1}>One profile is a CV. A team is a company.</H1>
+                <H1 tabIndex={-1}>
+                  Один профиль — резюме. Команда — целая компания.
+                </H1>
                 <Sub>
-                  Teams let members combine portfolios, services and skills into
-                  a single unit. Clients see a real delivery group. Investors
-                  see who actually executes. You see who you can delegate to
-                  without explaining context twice.
+                  Команды объединяют портфолио, услуги и навыки участников.
+                  Клиенты видят тех, кто вместе работает над результатом.
+                  Инвесторы — тех, кто воплощает идеи. А вы знаете, кому можно
+                  передать задачу без повторных объяснений.
                 </Sub>
               </>
             )}
@@ -57,22 +59,26 @@ export const TeamsPage: React.FC = () => {
             <>
               <WhyStrip>
                 <WhyItem>
-                  <strong>Shared portfolio</strong>
-                  <span>Show the full body of work, not fragments.</span>
+                  <strong>Общее портфолио</strong>
+                  <span>
+                    Покажите все совместные работы, а не отдельные фрагменты.
+                  </span>
                 </WhyItem>
                 <WhyItem>
-                  <strong>Easier hiring</strong>
-                  <span>Clients hire a team, not a stranger.</span>
+                  <strong>Проще найти исполнителей</strong>
+                  <span>
+                    Клиенты выбирают команду, а не незнакомого исполнителя.
+                  </span>
                 </WhyItem>
                 <WhyItem>
-                  <strong>Internal delegation</strong>
-                  <span>Hand off tasks to people you trust.</span>
+                  <strong>Делегирование внутри команды</strong>
+                  <span>Передавайте задачи тем, кому доверяете.</span>
                 </WhyItem>
               </WhyStrip>
               <HeroImage
                 $src={teamsImg}
                 role="img"
-                aria-label="A working team"
+                aria-label="Команда за работой"
               />
             </>
           )}
@@ -83,10 +89,10 @@ export const TeamsPage: React.FC = () => {
         <Container>
           {showContent && (
             <>
-              <H2>Active teams</H2>
+              <H2>Активные команды</H2>
               <SectionLede>
-                Each team is a real working unit with shared accountability —
-                not a logo collection.
+                Каждая команда — это люди, которые работают вместе и отвечают за
+                общий результат, а не просто набор логотипов.
               </SectionLede>
             </>
           )}
@@ -138,23 +144,27 @@ export const TeamsPage: React.FC = () => {
           {showContent && (
             <CrossLinks>
               <CrossCard to="/people">
-                <strong>Find people for your team →</strong>
+                <strong>Найдите людей в команду →</strong>
                 <span>
-                  Browse verified members and invite them in (after access).
+                  Изучайте профили проверенных участников и приглашайте их в
+                  команду после получения доступа.
                 </span>
-                <em>See members</em>
+                <em>Смотреть участников</em>
               </CrossCard>
               <CrossCard to="/projects">
-                <strong>Run projects as a team →</strong>
+                <strong>Работайте над проектами командой →</strong>
                 <span>
-                  Ship together, build a joint case study, attract investors.
+                  Работайте вместе, рассказывайте о совместных результатах и
+                  привлекайте инвесторов.
                 </span>
-                <em>Explore projects</em>
+                <em>Смотреть проекты</em>
               </CrossCard>
               <CrossCard to="/offers">
-                <strong>Publish a team offer →</strong>
-                <span>Sell a complete service, not freelance hours.</span>
-                <em>See offers</em>
+                <strong>Опубликуйте предложение команды →</strong>
+                <span>
+                  Предлагайте комплексную услугу, а не часы работы фрилансеров.
+                </span>
+                <em>Смотреть предложения</em>
               </CrossCard>
             </CrossLinks>
           )}

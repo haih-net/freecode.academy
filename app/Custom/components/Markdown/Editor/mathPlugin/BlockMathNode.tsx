@@ -59,6 +59,7 @@ export class BlockMathNode extends DecoratorNode<React.JSX.Element> {
       throwOnError: false,
       displayMode: true,
     })
+
     return (
       <div className="katex-block" dangerouslySetInnerHTML={{ __html: html }} />
     )

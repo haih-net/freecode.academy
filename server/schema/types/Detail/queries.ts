@@ -45,6 +45,7 @@ const tables: Record<DetailKind, string> = {
   resource: 'Resource',
   worklog: 'TaskWorkLog',
 }
+
 const columns: Record<DetailKind, string[]> = {
   user: [
     'id',
@@ -123,6 +124,7 @@ const columns: Record<DetailKind, string[]> = {
   ],
   worklog: ['id', 'createdAt', 'content', 'createdById', 'taskId'],
 }
+
 const selectRows = (
   db: Knex,
   kind: DetailKind,
@@ -140,20 +142,24 @@ export async function records(
         .filter((id): id is string => Boolean(id)),
     ),
   ]
+
   const authors: PublicAuthor[] = ids.length
     ? await db('User')
         .select('id', 'username', 'fullname', 'image')
         .whereIn('id', ids)
     : []
+
   const authorMap = new Map(authors.map((r) => [r.id, r]))
   const resourceIds = rows
     .map((r) => r.Resource)
     .filter((id): id is string => Boolean(id))
+
   const resources: Row[] = resourceIds.length
     ? await db('Resource')
         .select('id', 'name', 'uri', 'contentV2')
         .whereIn('id', resourceIds)
     : []
+
   const resourceMap = new Map(resources.map((r) => [r.id, r]))
   return rows.map((row) => {
     const resource = resourceMap.get(row.Resource || '')
@@ -264,6 +270,7 @@ export async function loadDetailPage(
     page,
     totalPages: 1,
   }
+
   if (kind === 'user') {
     interface SkillRow {
       id: string
@@ -289,6 +296,7 @@ export async function loadDetailPage(
         't.name',
       )
       .orderBy('t.name')
+
     data.skills = skills.map((s): UserSkill => ({
       id: s.id,
       technologyId: s.Technology,
@@ -309,17 +317,20 @@ export async function loadDetailPage(
           .where({ Team: row.id, status: 'Active' }),
       )
       .orderBy('createdAt')
+
     const memberships: { User: string; createdAt: Date }[] = await db(
       'TeamMember',
     )
       .select('User', 'createdAt')
       .where({ Team: row.id, status: 'Active' })
+
     const joined = new Map(
       memberships.map((member) => [
         member.User,
         member.createdAt.toISOString(),
       ]),
     )
+
     data.members = (await records(db, 'user', members)).map((member) => ({
       ...member,
       joinedAt: joined.get(member.id) ?? null,
@@ -373,6 +384,7 @@ export async function loadDetailPage(
         .select('website', 'address', 'email', 'phone', 'content', 'status')
         .where('id', row.Team)
         .first()
+
       if (team) {
         data.catalog = {
           website: team.website,
@@ -391,6 +403,7 @@ export async function loadDetailPage(
         .where('ImageResource', row.id)
         .orderBy('rank')
         .first()
+
       data.catalog = {
         website: null,
         address: null,
@@ -408,6 +421,7 @@ export async function loadDetailPage(
           .select(db.raw('1'))
           .whereRaw('?? = ??', ['CodeChallenge.Topic', 'Resource.id']),
       )
+
     if (isBlog) {
       data.relatedCount = Number(
         (

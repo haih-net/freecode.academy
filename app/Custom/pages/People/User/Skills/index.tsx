@@ -14,6 +14,7 @@ const statuses: Record<string, [string, string, string]> = {
   Neutral: ['Neutral', '#6b7280', '#f3f4f6'],
   Negative: ['Not Looking', '#991b1b', '#fee2e2'],
 }
+
 const SkillStatus: React.FC<{ status: string | null }> = ({ status }) => {
   if (!status) {
     return null
@@ -25,6 +26,7 @@ const SkillStatus: React.FC<{ status: string | null }> = ({ status }) => {
     </Chip>
   )
 }
+
 export const UserSkills: React.FC<{ skills: UserSkill[] }> = ({ skills }) => (
   <Grid>
     <Header>

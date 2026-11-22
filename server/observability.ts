@@ -1,3 +1,4 @@
+import { logDevError } from './errorLogging'
 import { createServer, type Server } from 'node:http'
 import type { ApolloServerPlugin } from '@apollo/server'
 import { collectDefaultMetrics, Counter, Registry } from '@prometheus-io/client'
@@ -10,6 +11,7 @@ const graphqlErrors: Counter<'kind'> = new Counter({
   labelNames: ['kind'],
   registers: [registry],
 })
+
 graphqlErrors.inc({ kind: 'client' }, 0)
 graphqlErrors.inc({ kind: 'server' }, 0)
 
@@ -24,6 +26,7 @@ export const logEvent = (
     event,
     ...fields,
   })
+
   process.stdout.write(`${line}\n`)
 }
 
@@ -35,6 +38,7 @@ export const graphqlObservability: ApolloServerPlugin<Context> = {
           const code: string = String(
             error.extensions?.code ?? 'INTERNAL_SERVER_ERROR',
           )
+
           const kind: 'client' | 'server' = [
             'GRAPHQL_PARSE_FAILED',
             'GRAPHQL_VALIDATION_FAILED',
@@ -46,9 +50,15 @@ export const graphqlObservability: ApolloServerPlugin<Context> = {
           ].includes(code)
             ? 'client'
             : 'server'
+
           graphqlErrors.inc({ kind })
           // Do not log queries, variables, credentials or arbitrary error messages.
           logEvent('error', 'graphql_error', { kind, code })
+          logDevError('graphql.error', error.originalError ?? error, {
+            operationName: context.operationName,
+            path: error.path,
+            code,
+          })
         }
       },
     }
@@ -77,6 +87,7 @@ export const startMetricsServer = (): Server | null => {
       response.writeHead(500).end()
     }
   })
+
   server.listen(
     Number(process.env.METRICS_PORT),
     process.env.METRICS_HOST ?? '127.0.0.1',

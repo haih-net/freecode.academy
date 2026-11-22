@@ -8,6 +8,7 @@ builder.queryField('world3dScene', (t) =>
         method: 'GET',
         signal: AbortSignal.timeout(10000),
       })
+
       if (response.status === 404) {
         return null
       }

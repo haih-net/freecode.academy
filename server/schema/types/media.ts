@@ -1,6 +1,5 @@
 import type { Express } from 'express'
 import express from 'express'
-import { imageResizerMiddleware } from '../../middleware/imageResizer'
 import { uploadRoot } from './files'
 
 export function setupMedia(app: Express): void {
@@ -17,5 +16,4 @@ export function setupMedia(app: Express): void {
       res.sendStatus(404)
     },
   )
-  app.use('/images', imageResizerMiddleware)
 }

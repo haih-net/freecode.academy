@@ -1,4 +1,4 @@
-import { useAppContext } from 'app/Custom/hooks/useAppContext'
+import { useAppContext } from 'app/Custom/components/AppContext'
 import { FileView } from 'app/Custom/components/FileView'
 import { MarkdownFileStyled } from './styles'
 import { useFileQuery } from 'app/gql/generated'
@@ -9,7 +9,7 @@ type MarkdownFileProps = {
 }
 
 export const MarkdownFile: React.FC<MarkdownFileProps> = ({ id }) => {
-  const { user } = useAppContext()
+  const { user } = useAppContext() ?? {}
 
   const response = useFileQuery({
     variables: {

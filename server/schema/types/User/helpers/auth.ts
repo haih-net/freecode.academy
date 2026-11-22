@@ -4,10 +4,10 @@ import jwt from 'jsonwebtoken'
 import type { Knex } from 'knex'
 import type { TokenRecord, UserRecord } from '../interfaces'
 
-function jwtSecret(): string {
+export function jwtSecret(): string {
   const secret = process.env.JWT_SECRET
   if (!secret) {
-    throw new Error('JWT_SECRET env is empty')
+    throw new Error('Переменная окружения JWT_SECRET не задана')
   }
   return secret
 }
@@ -19,6 +19,7 @@ export async function createToken(user: UserRecord, db: Knex): Promise<string> {
     jwtSecret(),
     { algorithm: 'HS256' },
   )
+
   await db<TokenRecord>('Token').insert({
     id,
     userId: user.id,
@@ -50,15 +51,18 @@ export async function authenticate(
   const stored = await db<TokenRecord>('Token')
     .where({ id: payload.tokenId, userId: payload.userId })
     .first()
+
   if (
     !stored ||
     (stored.expiredAt && stored.expiredAt.getTime() <= Date.now())
   ) {
     return null
   }
-  return (
-    (await db<UserRecord>('User').where({ id: payload.userId }).first()) ?? null
-  )
+  const user = await db<UserRecord>('User')
+    .where({ id: payload.userId })
+    .first()
+
+  return user && user.status !== 'blocked' ? user : null
 }
 
 export async function hashPassword(password: string): Promise<string> {

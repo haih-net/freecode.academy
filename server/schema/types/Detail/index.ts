@@ -18,9 +18,11 @@ const Author = builder.objectRef<PublicAuthor>('DetailAuthor').implement({
     image: t.exposeString('image'),
   }),
 })
+
 const Resource = builder
   .objectRef<{ uri: string | null }>('DetailResourceLink')
   .implement({ fields: (t) => ({ uri: t.exposeString('uri') }) })
+
 export const DetailRecordType = builder
   .objectRef<DetailRecord>('DetailRecord')
   .implement({
@@ -57,6 +59,7 @@ const Skill = builder.objectRef<UserSkill>('DetailUserSkill').implement({
     dateTill: t.exposeString('dateTill'),
   }),
 })
+
 const Catalog = builder.objectRef<CatalogInfo>('CatalogInfo').implement({
   fields: (t) => ({
     website: t.exposeString('website'),
@@ -66,6 +69,7 @@ const Catalog = builder.objectRef<CatalogInfo>('CatalogInfo').implement({
     image: t.exposeString('image'),
   }),
 })
+
 export const DetailPageType = builder
   .objectRef<DetailPageData>('DetailPage')
   .implement({

@@ -15,7 +15,7 @@ interface TelegramAccountRecord {
   username: string | null
   userId: string
 }
-interface BalanceRecord {
+export interface BalanceRecord {
   id: string
   createdAt: Date
   updatedAt: Date
@@ -31,6 +31,7 @@ const EthAccount = builder.objectRef<EthAccountRecord>('EthAccount').implement({
     userId: t.exposeString('userId', { nullable: true }),
   }),
 })
+
 const TelegramAccount = builder
   .objectRef<TelegramAccountRecord>('TelegramAccount')
   .implement({
@@ -42,7 +43,8 @@ const TelegramAccount = builder
       userId: t.exposeID('userId'),
     }),
   })
-const Balance = builder.objectRef<BalanceRecord>('Balance').implement({
+
+export const Balance = builder.objectRef<BalanceRecord>('Balance').implement({
   fields: (t) => ({
     id: t.exposeID('id'),
     createdAt: t.expose('createdAt', { type: 'DateTime' }),
@@ -72,6 +74,17 @@ export const User = builder.objectRef<UserRecord>('User').implement({
       type: UserStatusEnum,
       nullable: false,
       resolve: (user) => user.status,
+    }),
+    certificateFingerprints: t.stringList({
+      nullable: true,
+      resolve: (user, _args, ctx) =>
+        user.id === ctx.currentUser?.id
+          ? ctx
+              .db('ClientCertificateAccount')
+              .where({ userId: user.id })
+              .orderBy('fingerprint')
+              .pluck('fingerprint')
+          : null,
     }),
     EthAccount: t.field({
       type: EthAccount,

@@ -18,6 +18,7 @@ const Concept = builder
       content: t.exposeString('content'),
     }),
   })
+
 const Space = builder
   .objectRef<KbKnowledgeSpaceFragment>('KnowledgeSpace')
   .implement({
@@ -28,6 +29,7 @@ const Space = builder
       description: t.exposeString('description'),
     }),
   })
+
 const Fact = builder.objectRef<KbFactFragment>('KnowledgeFact').implement({
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
@@ -39,6 +41,7 @@ const Fact = builder.objectRef<KbFactFragment>('KnowledgeFact').implement({
     validFrom: t.exposeString('validFrom'),
   }),
 })
+
 const Participation = builder
   .objectRef<KbFactParticipationFragment>('KnowledgeParticipation')
   .implement({
@@ -52,6 +55,7 @@ const Participation = builder
       localImportance: t.exposeFloat('localImportance'),
     }),
   })
+
 const Projection = builder
   .objectRef<KbFactProjectionFragment>('KnowledgeProjection')
   .implement({
@@ -65,6 +69,7 @@ const Projection = builder
       notes: t.exposeString('notes'),
     }),
   })
+
 const Page = builder.objectRef<KnowledgePageData>('KnowledgePage').implement({
   fields: (t) => ({
     concepts: t.field({
@@ -94,6 +99,7 @@ const Page = builder.objectRef<KnowledgePageData>('KnowledgePage').implement({
     }),
   }),
 })
+
 builder.queryField('knowledgePage', (t) =>
   t.field({
     type: Page,
@@ -104,11 +110,13 @@ builder.queryField('knowledgePage', (t) =>
         .where('visibility', 'public')
         .orderBy('createdAt')
         .limit(10)
+
       const spaces = await db<KbKnowledgeSpaceFragment>('KBKnowledgeSpace')
         .select('id', 'name', 'type', 'description')
         .where('type', 'public')
         .orderBy('createdAt')
         .limit(10)
+
       const projections = await db<KbFactProjectionFragment>('KBFactProjection')
         .select(
           'id',
@@ -126,6 +134,7 @@ builder.queryField('knowledgePage', (t) =>
         )
         .orderBy('createdAt')
         .limit(10)
+
       const rows = await db<
         Omit<KbFactFragment, 'validFrom'> & { validFrom: Date | null }
       >('KBFact')
@@ -144,10 +153,12 @@ builder.queryField('knowledgePage', (t) =>
         )
         .orderBy('createdAt')
         .limit(10)
+
       const facts: KbFactFragment[] = rows.map((r) => ({
         ...r,
         validFrom: r.validFrom?.toISOString() ?? null,
       }))
+
       const participations = await db<KbFactParticipationFragment>(
         'KBFactParticipation',
       )
@@ -170,6 +181,7 @@ builder.queryField('knowledgePage', (t) =>
         )
         .orderBy('createdAt')
         .limit(10)
+
       return { concepts, spaces, facts, participations, projections }
     },
   }),

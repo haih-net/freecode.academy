@@ -28,6 +28,14 @@ import { MarkdownFilesList } from './components/MarkdownFilesList'
 function rehypeUnwrapFilesUploader() {
   return (tree: Root) => {
     visit(tree, 'element', (node: Element) => {
+      if (
+        node.tagName === 'p' &&
+        node.children.some(
+          (child) => child.type === 'element' && child.tagName === 'company',
+        )
+      ) {
+        node.tagName = 'div'
+      }
       if (node.tagName === 'files-uploader') {
         const extractFileElements = (
           children: typeof node.children,
@@ -126,6 +134,7 @@ const createComponents = ({
           const match = extracted
             .trim()
             .match(/^```mermaid\n?([\s\S]*?)\n?```$/)
+
           const source = match?.[1]?.trim() || ''
 
           if (source) {

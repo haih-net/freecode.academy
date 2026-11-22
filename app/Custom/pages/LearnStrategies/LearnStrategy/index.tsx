@@ -62,6 +62,7 @@ const StrategyTree: React.FC<{
     </LearnStrategyViewStyled>
   )
 }
+
 export const LearnStrategyPage: React.FC = () => {
   const data = useLoaderData<LibraryPageData>()
   return data.record ? (

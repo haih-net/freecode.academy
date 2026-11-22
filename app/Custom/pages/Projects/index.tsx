@@ -39,16 +39,18 @@ export const ProjectsPage: React.FC = () => {
       <Hero>
         <HeroInner>
           <div>
-            <Eyebrow>Projects </Eyebrow>
+            <Eyebrow>Проекты</Eyebrow>
 
             {showContent && (
               <>
-                <H1 tabIndex={-1}>Portfolio that works while you sleep.</H1>
+                <H1 tabIndex={-1}>
+                  Портфолио, которое работает, пока вы спите.
+                </H1>
                 <Sub>
-                  A project here is more than a case study. It's a public
-                  surface to attract partners, signal to investors, document how
-                  you solve real problems, and hand out small, scoped tasks the
-                  network can pick up.
+                  Проект здесь — больше, чем описание выполненной работы. Это
+                  открытая площадка для поиска партнёров и инвесторов.
+                  Показывайте, как вы решаете реальные проблемы, и публикуйте
+                  небольшие задачи с понятным объёмом для участников сообщества.
                 </Sub>
               </>
             )}
@@ -58,24 +60,27 @@ export const ProjectsPage: React.FC = () => {
             <>
               <WhyStrip>
                 <WhyItem>
-                  <strong>Find partners</strong>
+                  <strong>Находите партнёров</strong>
                   <span>
-                    Open a project for co-builders, not just employees.
+                    Приглашайте в проект соавторов, а не только сотрудников.
                   </span>
                 </WhyItem>
                 <WhyItem>
-                  <strong>Attract investors</strong>
-                  <span>Show traction, not slides.</span>
+                  <strong>Привлекайте инвесторов</strong>
+                  <span>Показывайте реальные результаты, а не слайды.</span>
                 </WhyItem>
                 <WhyItem>
-                  <strong>Document your work</strong>
-                  <span>Worklogs become case studies become inbound.</span>
+                  <strong>Рассказывайте о своей работе</strong>
+                  <span>
+                    Дневники работы становятся историями успеха и привлекают
+                    клиентов.
+                  </span>
                 </WhyItem>
               </WhyStrip>
               <HeroImage
                 $src={projectsImg}
                 role="img"
-                aria-label="Project plans"
+                aria-label="Планы проектов"
               />
             </>
           )}
@@ -86,10 +91,11 @@ export const ProjectsPage: React.FC = () => {
         <Container>
           {showContent && (
             <>
-              <H2>What's being built</H2>
+              <H2>Над чем работают участники</H2>
               <SectionLede>
-                Each project shows clear intent — partners wanted, investor
-                open, help needed. No silent listings.
+                В каждом проекте обозначена цель: поиск партнёров, привлечение
+                инвестиций или помощь в работе. Каждая публикация — с понятным
+                приглашением к участию.
               </SectionLede>
             </>
           )}
@@ -119,7 +125,7 @@ export const ProjectsPage: React.FC = () => {
                     <CardMeta>
                       {CreatedBy ? (
                         <>
-                          By <UserLink user={CreatedBy} />
+                          Автор: <UserLink user={CreatedBy} />
                         </>
                       ) : (
                         ''
@@ -142,24 +148,24 @@ export const ProjectsPage: React.FC = () => {
           {showContent && (
             <CrossLinks>
               <CrossCard to="/tasks">
-                <strong>Pick up a project task →</strong>
+                <strong>Возьмите задачу в проекте →</strong>
                 <span>
-                  Small, scoped pieces of real work. Build reputation by
-                  shipping.
+                  Небольшие реальные задачи с понятным объёмом. Укрепляйте
+                  репутацию своими результатами.
                 </span>
-                <em>See tasks</em>
+                <em>Смотреть задачи</em>
               </CrossCard>
               <CrossCard to="/teams">
-                <strong>Run projects as a team →</strong>
-                <span>Investors trust units, not individuals.</span>
-                <em>See teams</em>
+                <strong>Работайте над проектами командой →</strong>
+                <span>Инвесторы доверяют командам, а не одиночкам.</span>
+                <em>Смотреть команды</em>
               </CrossCard>
               <CrossCard to="/offers">
-                <strong>Looking for collaborators? →</strong>
+                <strong>Ищете соавторов? →</strong>
                 <span>
-                  Post an offer instead — it shows up in the public feed.
+                  Опубликуйте предложение — оно появится в общей ленте.
                 </span>
-                <em>Post an offer</em>
+                <em>Разместить предложение</em>
               </CrossCard>
             </CrossLinks>
           )}

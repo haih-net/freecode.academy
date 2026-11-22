@@ -2,9 +2,56 @@ import sharp from 'sharp'
 import fs from 'fs'
 import mime from 'mime-types'
 import { RequestHandler } from 'express'
-import { resolveUploadPath } from '../../schema/types/files'
+import path from 'path'
 import { parseBackgroundColor } from './helpers/parseBackgroundColor'
 import { resizeImg } from './helpers/resizeImg'
+
+const uploadsDir = path.resolve(process.cwd(), 'uploads')
+
+const searchPaths = ['', 'images']
+
+const srcTransforms: Array<{
+  match: RegExp | string
+  replace: string
+}> = [
+  { match: /^assets\/images\//, replace: 'images/' },
+  { match: /^assets\//, replace: 'images/assets/' },
+]
+
+function findFile(src: string): string | null {
+  if (src.includes('\0')) {
+    return null
+  }
+
+  const srcVariants = [src]
+
+  for (const { match, replace } of srcTransforms) {
+    if (typeof match === 'string' ? src.startsWith(match) : match.test(src)) {
+      srcVariants.push(src.replace(match, replace))
+    }
+  }
+
+  for (const srcVariant of srcVariants) {
+    for (const subdir of searchPaths) {
+      const filePath = path.resolve(uploadsDir, subdir, srcVariant)
+      const relativePath = path.relative(uploadsDir, filePath)
+
+      if (
+        relativePath === '..' ||
+        relativePath.startsWith(`..${path.sep}`) ||
+        path.isAbsolute(relativePath)
+      ) {
+        continue
+      }
+
+      if (fs.existsSync(filePath)) {
+        return filePath
+      }
+    }
+  }
+
+  return null
+}
 
 /**
  * Resize image
@@ -28,18 +75,15 @@ export const imageResizerMiddleware: RequestHandler = async (
   if ((match = pathPart.match(/^\/images\/resized\/([^/]+)\/(.+)/))) {
     src = match[2].replace(/^\/?uploads\//, '')
     type = match[1]
+  } else if ((match = pathPart.match(/^\/assets\/images\/(.+)/))) {
+    src = match[1]
+    type = 'origin'
   }
 
   if (src && type) {
-    let absPath: string
-    try {
-      absPath = resolveUploadPath(src)
-    } catch {
-      res.status(404).send('File not found')
-      return
-    }
+    const absPath = findFile(src)
 
-    if (fs.existsSync(absPath)) {
+    if (absPath) {
       const mimetype = mime.lookup(absPath)
 
       const contentType = mimetype

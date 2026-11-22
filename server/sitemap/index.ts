@@ -1,3 +1,4 @@
+import type { Express } from 'express'
 import type { Request, Response } from 'express'
 import type { Knex } from 'knex'
 import { db } from '../database'
@@ -13,6 +14,7 @@ const sections = [
   'tasks',
   'worklogs',
 ] as const
+
 type Section = (typeof sections)[number]
 interface SitemapRow {
   id: string
@@ -38,6 +40,7 @@ function sectionQuery(section: Section): Knex.QueryBuilder {
             .select(db.raw('1'))
             .whereRaw('?? = ??', ['CodeChallenge.Topic', 'item.id']),
         )
+
       return section === 'topics'
         ? query.where('item.type', 'Topic')
         : query.whereNot('item.type', 'Topic')
@@ -119,10 +122,16 @@ async function sitemapIndex(origin: string): Promise<string> {
     sections.map(async (section) => {
       const result =
         await sectionQuery(section).count<{ count: string }[]>('* as count')
+
       return Number(result[0].count)
     }),
   )
-  const locations = [`${origin}/sitemap.xml?section=main`]
+
+  const locations = [
+    `${origin}/sitemap.xml?section=main`,
+    `${origin}/sitemap.xml?section=concepts`,
+  ]
+
   sections.forEach((section, index) => {
     for (let page = 1; page <= Math.ceil(counts[index] / limit); page++) {
       locations.push(`${origin}/sitemap.xml?section=${section}&page=${page}`)
@@ -150,6 +159,7 @@ async function sitemapPage(
   const orderColumn = ['offers', 'projects', 'tasks'].includes(section)
     ? 'updatedAt'
     : 'createdAt'
+
   const columns = ['item.id', `item.${dateColumn} as updatedAt`]
   if (section === 'topics' || section === 'resources') {
     columns.push('item.uri')
@@ -170,6 +180,7 @@ async function sitemapPage(
     .orderBy('item.id')
     .limit(limit)
     .offset((page - 1) * limit)
+
   const items = rows.map((row): UrlItem => {
     let url: string
     switch (section) {
@@ -195,6 +206,7 @@ async function sitemapPage(
     }
     return { url, updatedAt: row.updatedAt.toISOString() }
   })
+
   return urlset(items, origin)
 }
 
@@ -202,6 +214,9 @@ export async function generateSitemap(
   req: Request,
   res: Response,
 ): Promise<void> {
+  if (req.query.section === 'concepts') {
+    return generateConceptSitemap(req, res)
+  }
   const section = req.query.section
   const rawPage = req.query.page ?? '1'
   if (
@@ -241,4 +256,52 @@ export async function generateSitemap(
   }
   res.setHeader('Cache-Control', 'no-store')
   res.type('application/xml').send(xml)
+}
+
+export function setupSitemap(app: Express): void {
+  app.get('/sitemap.xml', generateSitemap)
+}
+
+interface SitemapItem {
+  uri: string
+  updatedAt?: Date | string
+}
+function generateUrls(items: SitemapItem[], origin: string): string {
+  const urls = new Map<string, SitemapItem>()
+  for (const item of items) {
+    const url = new URL(item.uri, `${origin}/`)
+    if (url.origin !== origin || /^\/(calls|docs)(?:\/|$)/.test(url.pathname)) {
+      continue
+    }
+    urls.set(url.href, item)
+  }
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${Array.from(urls, ([url, item]) => {
+  const lastmod = item.updatedAt
+    ? `<lastmod>${new Date(item.updatedAt).toISOString()}</lastmod>`
+    : ''
+
+  return `  <url><loc>${escapeXml(url)}</loc>${lastmod}<priority>0.9</priority></url>`
+}).join('\n')}
+</urlset>`
+}
+
+async function generateConceptSitemap(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  const origin = `${req.protocol}://${req.get('host')}`
+  const concepts = await db('KBConcept')
+    .select<SitemapItem[]>(
+      db.raw(`COALESCE(NULLIF("uri", ''),
+        (SELECT "path" FROM "SiteRoute" WHERE "kBConceptId" = "KBConcept"."id" LIMIT 1),
+        '/concepts/' || "id") AS "uri"`),
+      'updatedAt',
+    )
+    .whereNot('visibility', 'unpublished')
+    .orderBy('updatedAt', 'desc')
+
+  const xml = generateUrls([{ uri: '/' }, ...concepts], origin)
+  res.set('Cache-Control', 'no-store').type('application/xml').send(xml)
 }

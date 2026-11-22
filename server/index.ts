@@ -1,21 +1,29 @@
 import './env'
-import express from 'express'
+import { setupCallSignaling } from './schema/types/CallRoom/helpers/setupCallSignaling'
+import { db, migrateDatabase } from './database'
+import express, { type ErrorRequestHandler } from 'express'
+import { logDevError } from './errorLogging'
+import { setupChat } from './chat'
 import { createServer } from 'node:http'
+import { listen, getServerUrls } from './listen'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { logEvent, startMetricsServer } from './observability'
 import type { ServerBuild } from 'react-router'
 import type { ViteDevServer } from 'vite'
 
-import { setupGraphqlMiddleware } from './graphqlMiddleware'
 import { setupMedia } from './schema/types/media'
-import { generateSitemap } from './sitemap'
+import { setupSitemap } from './sitemap'
+import { setupClientCertificate } from './middleware/clientCertificate'
+
+import { setupGraphqlMiddleware } from './middleware/graphql'
+import { imageResizerMiddleware } from './middleware/imageResizer'
 
 const dev = process.env.NODE_ENV === 'development'
-const port = Number(process.env.PORT || 3000)
 
 let stopGraphql: (() => Promise<void>) | null = null
 let vite: ViteDevServer | null = null
+let stopCalls: (() => void) | null = null
 let stopping = false
 let metricsServer: ReturnType<typeof startMetricsServer> = null
 
@@ -26,18 +34,30 @@ function setupShutdown(server: ReturnType<typeof createServer>) {
     }
     stopping = true
     logEvent('info', 'shutdown', { signal })
-    metricsServer?.close()
+    setTimeout(() => {
+      logEvent('error', 'shutdown_timeout', { signal })
+      process.exit(1)
+    }, 5000).unref()
 
-    if (stopGraphql) {
-      await stopGraphql()
+    try {
+      metricsServer?.close()
+      stopCalls?.()
+
+      if (stopGraphql) {
+        await stopGraphql()
+      }
+
+      if (vite) {
+        await vite.close()
+      }
+
+      await db.destroy()
+      server.close(() => process.exit(0))
+    } catch (error) {
+      logEvent('error', 'shutdown_error', { signal })
+      logDevError('shutdown.error', error)
+      process.exit(1)
     }
-
-    if (vite) {
-      await vite.close()
-    }
-
-    server.close(() => process.exit(0))
-    setTimeout(() => process.exit(0), 5000).unref()
   }
 
   process.on('SIGINT', () => shutdown('SIGINT'))
@@ -45,20 +65,22 @@ function setupShutdown(server: ReturnType<typeof createServer>) {
 }
 
 async function startServer() {
+  await migrateDatabase(db)
+  await db.raw('SELECT 1')
   const app = express()
   app.set('trust proxy', true)
   app.disable('x-powered-by')
 
-  app.get('/sitemap.xml', generateSitemap)
-  app.get('/robots.txt', (_req, res) => {
-    res
-      .type('text/plain')
-      .sendFile(resolve(dev ? 'public/robots.txt' : 'build/client/robots.txt'))
-  })
+  setupClientCertificate(app, db)
+  setupSitemap(app)
+  setupChat({ app, storage: undefined })
 
+  app.use('/images/resized/', imageResizerMiddleware)
+  app.use('/assets/images/', imageResizerMiddleware)
   setupMedia(app)
 
   const httpServer = createServer(app)
+  stopCalls = setupCallSignaling(httpServer, db)
 
   // GraphQL middleware
   stopGraphql = await setupGraphqlMiddleware(app, httpServer)
@@ -99,16 +121,24 @@ async function startServer() {
     const buildUrl: string = pathToFileURL(
       resolve('build/server/index.js'),
     ).href
+
     const build: ServerBuild = (await import(buildUrl)) as ServerBuild
     app.all('/{*splat}', createRequestHandler({ build }))
   }
 
+  const logRequestError: ErrorRequestHandler = (error, req, _res, next) => {
+    logDevError('http.error', error, { method: req.method, path: req.path })
+    next(error)
+  }
+
+  app.use(logRequestError)
+
   metricsServer = startMetricsServer()
   setupShutdown(httpServer)
 
-  httpServer.listen(port, '0.0.0.0', () => {
-    logEvent('info', 'server_ready', { port })
-  })
+  const port = await listen(httpServer, Number(process.env.PORT || 3000))
+  logEvent('info', 'server_ready', { port })
+  process.stdout.write(`Сайт доступен: ${getServerUrls(port).join('\n')}\n`)
 }
 
 startServer().catch((err) => {

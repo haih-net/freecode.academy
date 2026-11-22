@@ -47,6 +47,7 @@ const query: TypedDocumentNode<{ knowledgePage: KnowledgePageData }> = gql`
     }
   }
 `
+
 export const knowledgeLoader = async (): Promise<KnowledgePageData> => {
   const client = createApolloClient({ withWs: false })
   try {

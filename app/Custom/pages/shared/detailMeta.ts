@@ -22,6 +22,7 @@ export const detailMeta =
           : kind === 'resource'
             ? (record.uri ?? undefined)
             : `/${{ team: 'teams', offer: 'offers', task: 'tasks', worklog: 'worklogs' }[kind]}/${record.id}`
+
     return createSeoMeta({
       title:
         kind === 'user'

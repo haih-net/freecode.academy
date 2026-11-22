@@ -20,18 +20,21 @@ builder.mutationField('signin', (t) =>
         message,
         token: null,
       })
+
       if (!where.id && !where.email && !where.username) {
-        return failure('Email, username or id required')
+        return failure(
+          'Укажите электронную почту, логин или идентификатор пользователя',
+        )
       }
       const user = await findUser(ctx.db, where).first()
       if (!user) {
-        return failure('User not found')
+        return failure('Пользователь не найден')
       }
       if (!user.password) {
-        return failure('Password not set')
+        return failure('Пароль не задан')
       }
       if (!(await comparePassword(data.password, user.password))) {
-        return failure('Invalid password')
+        return failure('Неверный пароль')
       }
       return {
         success: true,

@@ -24,6 +24,7 @@ async function writeFileIfChanged(fileName: string, content: string) {
   const oldContent = (await fileExists(fileName))
     ? await readFile(fileName, 'utf8')
     : ''
+
   if (oldContent !== content) {
     await writeFile(fileName, content)
   }
@@ -34,6 +35,7 @@ function clearOutputDirectory() {
     .readdirSync(OUTPUT_PATH)
     .filter((name) => name.endsWith('.ts'))
     .map((name) => path.join(OUTPUT_PATH, name))
+
   return Promise.all(filenames.map((filename) => unlink(filename)))
 }
 

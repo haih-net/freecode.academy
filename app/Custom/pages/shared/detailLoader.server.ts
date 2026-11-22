@@ -105,6 +105,7 @@ const query: TypedDocumentNode<
     }
   }
 `
+
 export const detailLoader =
   (kind: DetailKind) =>
   async ({ request, params }: LoaderFunctionArgs): Promise<DetailPageData> => {
@@ -147,6 +148,7 @@ export const detailLoader =
         },
         fetchPolicy: 'no-cache',
       })
+
       if (!data?.detailPage || page > data.detailPage.totalPages) {
         throw new Response('Page not found', { status: 404 })
       }

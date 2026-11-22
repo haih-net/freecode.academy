@@ -21,6 +21,7 @@ export const ProjectPage: React.FC = () => {
     tasks,
     relatedCount,
   } = useLoaderData<DetailPageData>()
+
   return (
     <ProjectStyled>
       <Title tabIndex={-1}>{project.name}</Title>

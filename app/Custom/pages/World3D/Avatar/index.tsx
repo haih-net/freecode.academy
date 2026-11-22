@@ -30,6 +30,7 @@ function removeRootMotion(clip: AnimationClip): AnimationClip {
     }
     return true
   })
+
   clip.tracks = newTracks
   return clip
 }

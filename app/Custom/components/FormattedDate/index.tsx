@@ -62,7 +62,7 @@ function formatDateIntl({
   value,
   locale,
   format,
-  timeZone = 'UTC',
+  timeZone = 'Europe/Moscow',
   ...other
 }: FormatDateIntlArgs): string {
   if (!value) {
@@ -82,7 +82,7 @@ function formatDateIntl({
 
 export const FormattedDate: React.FC<FormattedDateProps> = ({
   value,
-  locale = 'en-US',
+  locale = 'ru-RU',
   format = 'datePadded',
   fallback = null,
   ...other

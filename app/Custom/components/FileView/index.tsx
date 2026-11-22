@@ -9,6 +9,7 @@ const Editor = lazy(() =>
     default: module.MarkdownEditor,
   })),
 )
+
 export const FileView: React.FC<{
   file: FileFragment
   currentUser: MeQuery['me'] | undefined
@@ -24,11 +25,13 @@ export const FileView: React.FC<{
     (event: React.ChangeEvent<HTMLInputElement>) => setName(event.target.value),
     [],
   )
+
   const changeDescription = useCallback(
     (event: React.ChangeEvent<HTMLTextAreaElement>) =>
       setDescription(event.target.value),
     [],
   )
+
   const submit = useCallback(
     (event: React.SubmitEvent) => {
       event.preventDefault()
@@ -45,6 +48,7 @@ export const FileView: React.FC<{
     },
     [update, file.id, name, description, content, stopEditing],
   )
+
   return (
     <FileViewStyled>
       {editing ? (

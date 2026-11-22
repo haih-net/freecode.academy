@@ -38,6 +38,7 @@ const tables: Record<LibraryKind, string> = {
   mindlogs: 'MindLog',
   concepts: 'KBConcept',
 }
+
 const fields: Record<LibraryKind, string[]> = {
   technologies: [
     'id',
@@ -138,6 +139,7 @@ const fields: Record<LibraryKind, string[]> = {
     'createdById',
   ],
 }
+
 const baseQuery = (
   db: Knex,
   kind: LibraryKind,
@@ -167,6 +169,7 @@ const baseQuery = (
   }
   return q
 }
+
 async function items(
   db: Knex,
   kind: LibraryKind,
@@ -184,6 +187,7 @@ async function items(
       content: kind === 'mindlogs' ? r.data : r.content,
     })),
   )
+
   const ids = rows.map((r) => r.id)
   let counts: { id: string; count: string }[] = []
   if (ids.length && (kind === 'technologies' || kind === 'strategies')) {
@@ -239,6 +243,7 @@ export async function loadLibrary(
     count: 0,
     totalPages: 1,
   }
+
   const q = baseQuery(db, kind)
   if (id || name) {
     const row = await q.where(id ? 'id' : 'name', id || name).first()
@@ -270,12 +275,14 @@ export async function loadLibrary(
         )
         .where('Technology', row.id)
         .orderBy('createdAt')
+
       const authors: PublicAuthor[] = await db('User')
         .select('id', 'username', 'fullname', 'image')
         .whereIn(
           'id',
           ms.map((m) => m.CreatedBy),
         )
+
       const users = new Map(authors.map((u) => [u.id, u]))
       result.members = ms.flatMap((m): LibraryMember[] => {
         const user = users.get(m.CreatedBy)
@@ -297,6 +304,7 @@ export async function loadLibrary(
       const strategyIds = db('LearnStrategyStage')
         .select('learnStrategyId')
         .where('technologyId', row.id)
+
       result.related = await items(
         db,
         'strategies',
@@ -330,20 +338,25 @@ export async function loadLibrary(
           .whereIn('learnStrategyId', ids)
           .orderBy('createdAt')
           .orderBy('id')
+
         const targets = stages
           .map((s) => s.learnStrategyTargetId)
           .filter((id): id is string => !!id)
+
         const targetRows = await baseQuery(db, 'strategies').whereIn(
           'id',
           targets,
         )
+
         const techRows = await baseQuery(db, 'technologies').whereIn(
           'id',
           stages.map((s) => s.technologyId).filter((id): id is string => !!id),
         )
+
         const names = new Map(
           [...targetRows, ...techRows].map((r) => [r.id, r.name || r.id]),
         )
+
         result.stages.push(
           ...stages.map((s): LibraryStage => ({
             id: s.id,
@@ -416,6 +429,7 @@ export async function loadLibrary(
         : kind === 'strategies' || kind === 'sections'
           ? null
           : 10
+
   result.count = Number(
     (await q.clone().clearSelect().count<{ count: string }[]>('* as count'))[0]
       .count,

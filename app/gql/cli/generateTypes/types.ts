@@ -114,6 +114,7 @@ function createQueriesMap(filesMap: Map<string, string>) {
           definition.loc.start,
           definition.loc.end,
         )
+
         if (
           oldText.replace(/\r/g, '').trim() !==
           newText.replace(/\r/g, '').trim()
@@ -261,6 +262,7 @@ async function generateTypesFromMap() {
           /import \* as Types from '.*?';/g,
           `import * as Types from './types';`,
         )
+
         return writeFileIfChanged(filename, updated)
       },
     ),

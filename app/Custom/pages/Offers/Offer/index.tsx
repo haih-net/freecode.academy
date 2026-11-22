@@ -13,6 +13,7 @@ export const OfferPage: React.FC = () => {
     offer.image && !offer.image.startsWith('http')
       ? getResizedImagePath({ path: offer.image, size: 'middle' })
       : null
+
   return (
     <OfferStyled>
       <ImageStyled>

@@ -30,6 +30,7 @@ const Item = builder.objectRef<LibraryItem>('LibraryItem').implement({
     topicId: t.exposeString('topicId'),
   }),
 })
+
 const Author = builder.objectRef<PublicAuthor>('LibraryAuthor').implement({
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
@@ -38,6 +39,7 @@ const Author = builder.objectRef<PublicAuthor>('LibraryAuthor').implement({
     image: t.exposeString('image'),
   }),
 })
+
 const Member = builder.objectRef<LibraryMember>('LibraryMember').implement({
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
@@ -50,6 +52,7 @@ const Member = builder.objectRef<LibraryMember>('LibraryMember').implement({
     dateTill: t.exposeString('dateTill'),
   }),
 })
+
 const Stage = builder.objectRef<LibraryStage>('LibraryStage').implement({
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
@@ -60,6 +63,7 @@ const Stage = builder.objectRef<LibraryStage>('LibraryStage').implement({
     level: t.exposeInt('level'),
   }),
 })
+
 const Page = builder.objectRef<LibraryPageData>('LibraryPage').implement({
   fields: (t) => ({
     items: t.field({
@@ -92,6 +96,7 @@ const Page = builder.objectRef<LibraryPageData>('LibraryPage').implement({
     totalPages: t.exposeInt('totalPages', { nullable: false }),
   }),
 })
+
 builder.queryField('libraryPage', (t) =>
   t.field({
     type: Page,

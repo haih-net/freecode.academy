@@ -36,6 +36,7 @@ test('GraphQL execution errors with HTTP 200 are recorded as server failures', a
     },
     plugins: [graphqlObservability],
   })
+
   await api.start()
   onTestFinished(() => api.stop())
   const app: Express = express()
@@ -64,10 +65,12 @@ test('GraphQL execution errors with HTTP 200 are recorded as server failures', a
       body: JSON.stringify({ query: '{ fail }' }),
     },
   )
+
   assert.equal(response.status, 200)
   assert.match(await response.text(), /Fixture failure/)
   const text: string = await (
     await fetch(`http://127.0.0.1:${metricsAddress.port}/metrics`)
   ).text()
+
   assert.match(text, /haih_graphql_errors_total\{kind="server"\} 1/)
 })

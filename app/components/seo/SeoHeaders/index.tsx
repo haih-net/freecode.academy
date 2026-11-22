@@ -58,6 +58,7 @@ export function createSeoMeta({
 }: SeoHeadersProps): MetaDescriptor[] {
   const canonical =
     path === undefined || noindex ? undefined : canonicalUrl(path)
+
   image = noindex ? undefined : image
   const imageUrl = image ? new URL(image.src, site.origin).href : undefined
   const websiteId = `${site.origin}/#website`
@@ -99,6 +100,7 @@ export function createSeoMeta({
         },
       ]
     : []
+
   if (canonical && imageUrl && image) {
     graph.push({
       '@type': 'ImageObject',
@@ -149,6 +151,7 @@ export function createSeoMeta({
       path: post.path,
       description: post.description,
     })) ?? collection?.items
+
   if (canonical && items) {
     graph.push({
       '@type': 'ItemList',
@@ -222,6 +225,7 @@ export function createSeoMeta({
     '@context': 'https://schema.org',
     '@graph': graph,
   }
+
   const tags: MetaDescriptor[] = [
     { title },
     { name: 'description', content: description },
@@ -242,6 +246,7 @@ export function createSeoMeta({
     { name: 'twitter:title', content: title },
     { name: 'twitter:description', content: description },
   ]
+
   if (canonical) {
     tags.push(
       { tagName: 'link', rel: 'canonical', href: canonical },

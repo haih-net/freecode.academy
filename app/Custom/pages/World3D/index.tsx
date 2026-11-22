@@ -12,6 +12,7 @@ import { WorldStyled } from './styles'
 const Scene = lazy(() =>
   import('./Scene').then((module) => ({ default: module.WorldScene })),
 )
+
 class SceneBoundary extends Component<
   { children: React.ReactNode },
   { error: boolean }
@@ -42,9 +43,11 @@ export const WorldPage: React.FC = () => {
     clientSnapshot,
     serverSnapshot,
   )
+
   const reconnect = useCallback(() => {
     void revalidator.revalidate()
   }, [revalidator])
+
   return (
     <WorldStyled aria-label="3D World">
       {root ? (

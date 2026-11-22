@@ -23,6 +23,7 @@ export function normalizeWorldScene(payload: unknown): WorldObject3d | null {
     record.object && typeof record.object === 'object'
       ? (record.object as Record<string, unknown>)
       : record
+
   return typeof object.type === 'string' || Array.isArray(object.children)
     ? (object as WorldObject3d)
     : null

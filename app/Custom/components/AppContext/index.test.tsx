@@ -11,14 +11,14 @@ import {
 import { useApollo } from 'app/gql/apolloClient'
 import { UserStatusEnum } from 'app/gql/generated'
 import { AppContextProvider } from './index'
-import { useAppContext } from '../../hooks/useAppContext'
+import { useAppContext } from 'app/Custom/components/AppContext'
 import { App } from '../pages/_App'
 
 vi.mock('app/gql/apolloClient', () => ({ useApollo: vi.fn() }))
 afterEach(cleanup)
 
 const Consumer: React.FC = () => {
-  const { user, userLoading } = useAppContext()
+  const { user, userLoading = true } = useAppContext() ?? {}
   return <output>{userLoading ? 'loading' : (user?.id ?? 'anonymous')}</output>
 }
 
@@ -29,10 +29,18 @@ describe('shared application context', () => {
         <Consumer />
       </AppContextProvider>,
     )
+
     expect(screen.getByText('loading')).toBeTruthy()
     view.rerender(
       <AppContextProvider
-        user={{ id: 'owner', sudo: false, status: UserStatusEnum.ACTIVE }}
+        user={{
+          id: 'owner',
+          sudo: false,
+          status: UserStatusEnum.ACTIVE,
+          createdAt: '2026-01-01T00:00:00.000Z',
+          updatedAt: '2026-01-01T00:00:00.000Z',
+          isAiAgent: false,
+        }}
         userLoading={false}
       >
         <Consumer />
@@ -55,10 +63,21 @@ describe('shared application context', () => {
                   me: {
                     __typename: 'User',
                     id: 'owner',
+                    email: null,
                     username: 'owner',
                     fullname: 'Owner',
                     sudo: false,
                     status: 'active',
+                    createdAt: '2026-01-01T00:00:00.000Z',
+                    updatedAt: '2026-01-01T00:00:00.000Z',
+                    isAiAgent: false,
+                    image: null,
+                    content: null,
+                    intro: null,
+                    certificateFingerprints: [],
+                    EthAccount: null,
+                    TelegramAccount: null,
+                    Balance: null,
                   },
                 },
               })
@@ -67,6 +86,7 @@ describe('shared application context', () => {
           }),
       ),
     })
+
     vi.mocked(useApollo).mockReturnValue(client)
     try {
       render(

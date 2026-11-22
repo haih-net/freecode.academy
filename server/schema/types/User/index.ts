@@ -2,3 +2,7 @@ import './types'
 import './resolvers/queries'
 import './resolvers/signin'
 import './resolvers/update'
+import './resolvers/signup'
+
+import './resolvers/createReferrerToken'
+import './resolvers/create'

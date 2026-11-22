@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
 import mermaid, { MermaidConfig } from 'mermaid'
+import { nanoid } from 'nanoid'
 
 import {
   MermaidContainerStyled,
@@ -89,7 +90,7 @@ export const Mermaid: React.FC<MermaidProps> = ({
 
     const renderDiagram = async () => {
       try {
-        const id = `mermaid-${crypto.randomUUID()}`
+        const id = `mermaid-${nanoid()}`
 
         const program = `
 %%{init: ${options}}%%

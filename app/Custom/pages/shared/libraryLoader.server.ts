@@ -152,6 +152,7 @@ const query: TypedDocumentNode<
     }
   }
 `
+
 export const libraryLoader =
   (kind: LibraryKind) =>
   async ({ request, params }: LoaderFunctionArgs): Promise<LibraryPageData> => {
@@ -187,6 +188,7 @@ export const libraryLoader =
         },
         fetchPolicy: 'no-cache',
       })
+
       if (!data?.libraryPage || page > data.libraryPage.totalPages) {
         throw new Response('Page not found', { status: 404 })
       }

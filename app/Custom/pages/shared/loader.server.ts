@@ -59,6 +59,7 @@ const query: TypedDocumentNode<
     }
   }
 `
+
 export const menuLoader =
   (section: MenuSection) =>
   async ({ request }: LoaderFunctionArgs): Promise<MenuPageData> => {
@@ -88,6 +89,7 @@ export const menuLoader =
         },
         fetchPolicy: 'no-cache',
       })
+
       if (!data) {
         throw new Error('No menu page response')
       }

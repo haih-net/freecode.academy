@@ -157,6 +157,7 @@ function getCardTitle(object: WorldObject3d): string | null {
     properties.name,
     object.name,
   ]
+
   for (const candidate of candidates) {
     if (typeof candidate === 'string' && candidate.trim()) {
       return candidate.trim()

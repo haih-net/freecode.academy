@@ -1,20 +1,23 @@
-uploads/
-node_modules/
-build/
-.react-router/
 .env
 .env.*
-shared/*
 
 !.gitkeep
 
+/storage
+/uploads
+/node_modules
+/build
+/.react-router
+/shared
 
-docker/monitoring/.secrets/
+/docker/monitoring/.secrets
 
 docker/monitoring/alertmanager/generated.json
 
-coverage/
-playwright-report/
-test-results/
+/coverage
+/playwright-report
+/test-results
 
 !docker/.env.example
+
+/docker/supabase/data

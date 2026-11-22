@@ -9,6 +9,7 @@ const breakpoints = {
 const colors = {
   // Primary colors
   primary: '#3b82f6',
+  link: '#3b82f6',
   secondary: '#6b7280',
   foreground: '#1f2937',
   background: '#ffffff',
@@ -65,6 +66,7 @@ const backgrounds = {
 }
 
 export const theme = {
+  outline: '2px solid #FF5B2E',
   bg: '#FBFAF6',
   surface: '#FFFFFF',
   ink: '#0E0F12',

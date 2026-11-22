@@ -35,6 +35,7 @@ function extractFiles(children: FilesUploaderMdastNode['children']) {
         name: string
         value: unknown
       }>
+
       const id = String(attrs?.find((a) => a.name === 'data-id')?.value || '')
       const nodeChildren = nodeAny.children as Array<{ value?: string }>
       const name = nodeChildren?.[0]?.value || ''
@@ -88,6 +89,7 @@ export const FilesUploaderEditor: React.FC<JsxEditorProps> = ({
       const newChildren = (node.children || []).filter(
         (_, i) => i !== indexToRemove,
       )
+
       updateMdastNode({ children: newChildren })
     },
     [node.children, updateMdastNode],

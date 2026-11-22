@@ -66,6 +66,33 @@ export async function resizeImg(img: Sharp, type: string, metadata: Metadata) {
 
       break
 
+    case 'slider_thumb':
+      img.resize({
+        width: 400,
+        height: 300,
+        fit: 'cover',
+      })
+
+      break
+
+    case 'slider_dot_thumb':
+      img.resize({
+        width: 40,
+        height: 30,
+        fit: 'cover',
+      })
+
+      break
+
+    case 'marker_thumb':
+      img.resize({
+        width: 200,
+        height: 130,
+        fit: 'cover',
+      })
+
+      break
+
     default:
       throw new Error('Wrong image type')
   }

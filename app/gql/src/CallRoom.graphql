@@ -1,0 +1,55 @@
+fragment CallRoomNoNesting on CallRoom {
+  id
+  title
+  authenticatedOnly
+  hasAccessCode
+  closed
+  isOwner
+}
+query callRoom($id: ID!) {
+  callRoom(id: $id) {
+    ...CallRoomNoNesting
+  }
+}
+mutation createCallRoom($data: CallRoomSettingsInput!) {
+  createCallRoom(data: $data) {
+    ...CallRoomNoNesting
+  }
+}
+mutation updateCallRoom($id: ID!, $data: CallRoomSettingsInput!) {
+  updateCallRoom(id: $id, data: $data) {
+    ...CallRoomNoNesting
+  }
+}
+mutation closeCallRoom($id: ID!) {
+  closeCallRoom(id: $id) {
+    ...CallRoomNoNesting
+  }
+}
+mutation joinCallRoom($id: ID!, $data: JoinCallRoomInput!) {
+  joinCallRoom(id: $id, data: $data) {
+    ...CallRoomNoNesting
+    sessionToken
+    iceServers {
+      urls
+      username
+      credential
+    }
+  }
+}
+
+query callRooms {
+  callRooms {
+    ...CallRoomNoNesting
+  }
+}
+mutation deleteCallRoom($id: ID!) {
+  deleteCallRoom(id: $id) {
+    ...CallRoomNoNesting
+  }
+}
+mutation kickCallRoomParticipant($id: ID!, $participantId: ID!) {
+  kickCallRoomParticipant(id: $id, participantId: $participantId) {
+    ...CallRoomNoNesting
+  }
+}

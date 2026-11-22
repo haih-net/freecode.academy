@@ -1,3 +1,6 @@
+import { ChatProvider } from '../components/Chat/ChatWidget/context'
+import { ChatWidget } from '../components/Chat/ChatWidget'
+import { FeedbackForm } from '../components/Feedback'
 import { useEffect, useRef, type FC, type PropsWithChildren } from 'react'
 import { useLocation, useNavigationType } from 'react-router'
 import { Header } from './Header'
@@ -19,15 +22,25 @@ export const Layout: FC<PropsWithChildren> = ({ children }) => {
   }, [pathname, action])
 
   return (
-    <LayoutStyled>
-      <a className="skip-link" href="#main-content">
-        Перейти к содержимому
-      </a>
-      <Header />
-      <main id="main-content" tabIndex={-1}>
-        {children}
-      </main>
-      <Footer />
-    </LayoutStyled>
+    <ChatProvider>
+      <LayoutStyled>
+        <a className="skip-link" href="#main-content">
+          Перейти к содержимому
+        </a>
+        <Header />
+        <main
+          id="main-content"
+          tabIndex={-1}
+          data-application={/^\/(signin|signup|panel|users|admin-panel|calls|docs|ai)(\/|$)/.test(
+            pathname,
+          )}
+        >
+          {children}
+        </main>
+        <Footer />
+        <FeedbackForm />
+        {pathname !== '/ai' && <ChatWidget />}
+      </LayoutStyled>
+    </ChatProvider>
   )
 }

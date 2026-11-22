@@ -8,7 +8,7 @@ This repository is the website itself. It is not an engine, framework, starter k
 
 The website is its own first demonstration. Its implementation, experiments, checks, commits, and eventually releases provide evidence for the approach it describes. Do not present planned or untested capabilities as proven.
 
-All project content, UI copy, documentation, code identifiers, and commit/release descriptions must be in English. Discussion with the owner may be in Russian.
+Язык сайта — русский. Все пользовательские тексты, включая кнопки, пояснения, ошибки, сообщения валидации, подписи доступности, метаданные страниц и документацию на сайте, должны быть на русском. Новую документацию и изменения README писать на русском. Идентификаторы кода, имена API, названия технологий и технические обозначения сохранять в оригинале. Сообщения коммитов писать на английском. Общение с владельцем — на русском.
 
 ## Decision model
 
@@ -181,3 +181,8 @@ These project-specific rules take precedence over the generic template instructi
 - After moving components or changing shared types, fix imports and rerun type checking. Verify the build when changes affect Linaria or routing.
 - Preserve the owner's changes, comments, logs, and diagnostics.
 - Reuse the original project’s entity link components under `app/Custom/components/Link` and its shared helpers. Keep URL construction with the corresponding link component. Use `getResizedImagePath` and the original image resizing middleware and presets.
+  Постепенно оформляйте проверенные знания о реализации в русскоязычные страницы решений. Объём документации должен соответствовать сложности проекта.
+
+## Согласованный приоритет интеграции (22 ноября 2026)
+
+При слиянии приоритет у входящей логики upstream: авторизация, регистрация, ИИ-чат, уведомления, логирование, биллинг и транзакции. Предыдущее ограничение на запросы только для чтения и скрытие авторизации больше не применяется. Сохранять данные и доступность чтения старого контента Freecode Academy, включая топики, публичные комментарии, блоги и пользователей. Применённые миграции не переписывать; адаптацию схемы оформлять последующими миграциями с сохранением существующих записей.
